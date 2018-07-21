@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Client.Data;
 
-namespace Client.Msg
+namespace Client.Event
 {
     public class EventNode
     {
-        public DataBase data;
+        public IProcessEvent script;
         public EventNode next;
-        public EventNode(DataBase data)
+        public EventNode(IProcessEvent script)
         {
-            this.data = data;
+            this.script = script;
             next = null;
         }
     }

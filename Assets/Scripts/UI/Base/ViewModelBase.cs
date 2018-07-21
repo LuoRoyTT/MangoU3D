@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using Client.Core;
 using System;
+using Client.Event;
+using Client.Data;
+using Client.Framework;
 
 namespace Client.UI
 {
@@ -66,7 +69,7 @@ namespace Client.UI
  
 	}
 
-	public class ViewModelBase
+	public class ViewModelBase:IProcessEvent
 	{
         private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
         private ModuleBase module;
@@ -148,5 +151,20 @@ namespace Client.UI
         {
             UIEventMaps.Clear();
         }
-	}
+
+        public void ProcessEvent(enEventID eventID, DataBase data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RegistMsg(enEventID eventID)
+        {
+            MsgCenter.Instance.RegistMsg(this,eventID);
+        }
+
+        public void UnRegistMsg(enEventID eventID)
+        {
+            MsgCenter.Instance.UnRegistMsg(this,eventID);
+        }
+    }
 }

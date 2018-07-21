@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Client.Core;
 
 namespace Client.Framework
 {
-    public class ResourceManager : BaseManager<ResourceManager>
+    public class ResourceManager : MonoSingleton<ResourceManager>
     {
         private Dictionary<string, Dictionary<string, UnityEngine.Object>> cache = new Dictionary<string, Dictionary<string, UnityEngine.Object>>();
 

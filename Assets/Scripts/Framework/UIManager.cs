@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Client.UI;
-using Client.Msg;
+using Client.Event;
+using Client.Core;
 
 namespace Client.Framework
 {
-    public class UIManager : BaseManager<UIManager>
+    public class UIManager : MonoSingleton<UIManager>
     {
         protected override void Awake()
         {
