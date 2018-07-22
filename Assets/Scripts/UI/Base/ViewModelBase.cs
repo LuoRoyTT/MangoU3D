@@ -11,71 +11,13 @@ using Client.Framework;
 
 namespace Client.UI
 {
-    public class BindableProperty<T>
-    {
-        private UnityEvent<T,T> OnValueChanged;
-        public BindableProperty(UnityAction<T,T> onValueChanged)
-        {
-            OnValueChanged.AddListener(onValueChanged);
-        }
-        public BindableProperty(T value,UnityAction<T,T> onValueChanged)
-		{
-			_value = value;
-            OnValueChanged.AddListener(onValueChanged);
-		}
-        private T _value = default(T);
-        public T Value
-        {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                if (!Equals(_value, value))
-                {
-                    T oldValue = _value;
-                    _value = value;
-                    if (OnValueChanged != null)
-                        OnValueChanged.Invoke(oldValue,value);
-                }
-            }
-        }
- 
-        public void AddListener(UnityAction<T,T> onValueChanged)
-        {
-            this.OnValueChanged.AddListener(onValueChanged);
-        }
- 
-        public void RemoveListener(UnityAction<T,T> onValueChanged)
-        {
-            this.OnValueChanged.RemoveListener(onValueChanged);
-        }
- 
-        public void RemoveAllListeners()
-        {
-            this.OnValueChanged.RemoveAllListeners();
-        }
-
-        public override string ToString()
-        {
-            return (Value != null ? Value.ToString() : "null");
-        }
- 
-        public void Clear()
-        {
-            _value = default(T);
-        }
- 
-	}
-
 	public class ViewModelBase:IProcessEvent
 	{
         private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
         private ModuleBase module;
         private List<ViewBase> views=new List<ViewBase>();
 
-        private Dictionary<int,List<Action<UIEvent>>> UIEventMaps = new Dictionary<int,List<Action<UIEvent>>>();
+        private Dictionary<int,List<Action<UICommad>>> UICommandMaps = new Dictionary<int,List<Action<UICommad>>>();
 
         public ViewModelBase(ModuleBase module)
         {
@@ -101,16 +43,16 @@ namespace Client.UI
                 views.Remove(view);
             }
         }
-        public void ReceiveCommand(int command,UIEvent uiMsg)
+        public void ReceiveCommand(int commandID,UICommad command)
         {
-            if(UIEventMaps.ContainsKey(command))
+            if(UICommandMaps.ContainsKey(commandID))
             {
-                List<Action<UIEvent>> actions = UIEventMaps[command];
-                if(actions!=null && actions.Count!=0)
+                List<Action<UICommad>> commands = UICommandMaps[commandID];
+                if(commands!=null && commands.Count!=0)
                 {
-                    for (int i = 0; i < actions.Count; i++)
+                    for (int i = 0; i < commands.Count; i++)
                     {
-                        actions[i](uiMsg);
+                        commands[i](command);
                     }
                 } 
             }
@@ -119,27 +61,34 @@ namespace Client.UI
                 Debug.LogError("");
             }
         }
-        protected void AddUIEventListener(int command,Action<UIEvent> action)
+        public void SendNotifiction(int notifictionID,UINotifiction notifiction)
         {
-            if(UIEventMaps.ContainsKey(command))
+            for (int i = 0; i < views.Count; i++)
             {
-                List<Action<UIEvent>> actions = UIEventMaps[command];
-                actions.Add(action);
+                views[i].OnNotifiction(notifictionID,notifiction);
+            }
+        }
+        protected void AddUIEventListener(int commandID,Action<UICommad> command)
+        {
+            if(UICommandMaps.ContainsKey(commandID))
+            {
+                List<Action<UICommad>> commands = UICommandMaps[commandID];
+                commands.Add(command);
             }
             else
             {
-                UIEventMaps.Add(command,new List<Action<UIEvent>>(){action});
+                UICommandMaps.Add(commandID,new List<Action<UICommad>>(){command});
             }
         }
-        protected void RemoveUIEventListeners(int command,Action<UIEvent> action)
+        protected void RemoveUIEventListeners(int commandID,Action<UICommad> command)
         {
-            if(UIEventMaps.ContainsKey(command))
+            if(UICommandMaps.ContainsKey(commandID))
             {
-                List<Action<UIEvent>> actions = UIEventMaps[command];
-                actions.Remove(action);
-                if(actions.Count==0)
+                List<Action<UICommad>> commands = UICommandMaps[commandID];
+                commands.Remove(command);
+                if(commands.Count==0)
                 {
-                    UIEventMaps.Remove(command);
+                    UICommandMaps.Remove(commandID);
                 }
             }
             else
@@ -149,7 +98,7 @@ namespace Client.UI
         }
         protected void RemoveAllUIEvnetListeners()
         {
-            UIEventMaps.Clear();
+            UICommandMaps.Clear();
         }
 
         public void ProcessEvent(enEventID eventID, DataBase data)

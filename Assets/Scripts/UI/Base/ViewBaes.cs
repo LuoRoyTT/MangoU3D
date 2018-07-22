@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Client.Core;
@@ -9,19 +10,20 @@ namespace Client.UI
 	public class ViewBase : UIContainer 
 	{
 		private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
+		 private Dictionary<int,List<Action<UINotifiction>>> UICommandMaps = new Dictionary<int,List<Action<UINotifiction>>>();
 		private ModuleBase module;
-		private BindableProperty<ViewModelBase> BindableProperty;
+		private BindableProperty bindableViewModel;
 
         public ViewModelBase Model 
 		{
 			get
 			{
-				return BindableProperty.Value ;
+				return bindableViewModel.Value as ViewModelBase ;
 			}
 			set
 			{
-				BindableProperty.AddListener(OnViewValueChanged);
-				BindableProperty.Value = value;
+				bindableViewModel.AddListener(OnViewValueChanged);
+				bindableViewModel.Value = value;
 			}
 		}
 
@@ -32,23 +34,27 @@ namespace Client.UI
 			methodInfoMap.InvokeMethod(this,"initialize");
 
 		}
-		private void OnViewValueChanged(ViewModelBase oldModel,ViewModelBase newModel)
+		private void OnViewValueChanged(object oldModel,object newModel)
 		{
 			methodInfoMap.InvokeMethod(this,"OnBindValue");
 			if(oldModel!=null)
 			{
-				oldModel.RemoveView(this);
+				(oldModel as ViewModelBase).RemoveView(this);
 			}
 			if(newModel!=null)
 			{
-				newModel.AddView(this);
+				(newModel as ViewModelBase).AddView(this);
 			}
 			
 		}
-		private void SendCommand(int command,params object[] objs)
+		protected void SendCommand(int commandID,UICommad command)
 		{
-			UIEvent uiMsg=new UIEvent();
-			Model.ReceiveCommand(command,uiMsg);
+			Model.ReceiveCommand(commandID,command);
+		}
+
+		public void OnNotifiction(int NotifictionID,UINotifiction notifictuin)
+		{
+
 		}
 	}
 }

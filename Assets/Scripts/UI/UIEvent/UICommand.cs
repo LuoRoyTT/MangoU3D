@@ -5,9 +5,9 @@ using UnityEngine.Events;
 
 namespace Client.UI
 {
-    public class UIEvent
+    public class UICommad
     {
-        public UIEvent()
+        public UICommad()
         {
 
         }
