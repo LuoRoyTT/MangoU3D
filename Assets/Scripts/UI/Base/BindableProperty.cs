@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace Client.UI
 {
-    public delegate void OnValueChanged(object oldValue,object newValue);
+    public delegate void ValueChangeAction(object oldValue,object newValue);
     public class BindableProperty:IEnumerable 
     {
 
-        private OnValueChanged OnValueChanged;
-        private OnValueChanged OnChildValueChanged;
+        private ValueChangeAction OnValueChanged;
+        private ValueChangeAction OnChildValueChanged;
         //private UnityEvent<T,T> OnValueChanged;
         private List<BindableProperty> chlidCollection;
         public int Count
@@ -64,16 +64,16 @@ namespace Client.UI
             }
             chlidCollection.RemoveAll(match);
         }
-        public BindableProperty(OnValueChanged onValueChanged)
+        public BindableProperty(ValueChangeAction onValueChanged)
         {
             OnValueChanged+=onValueChanged;
         }
-        public BindableProperty(object value,OnValueChanged onValueChanged)
+        public BindableProperty(object value,ValueChangeAction onValueChanged)
         {
             _value = value;
             OnValueChanged+=onValueChanged;
         }
-        public BindableProperty(object value,OnValueChanged onValueChanged,OnValueChanged onChildValueChanged)
+        public BindableProperty(object value,ValueChangeAction onValueChanged,ValueChangeAction onChildValueChanged)
         {
             if(value is IEnumerable)
             {
@@ -107,12 +107,12 @@ namespace Client.UI
             }
         }
 
-        public void AddListener(OnValueChanged onValueChanged)
+        public void AddListener(ValueChangeAction onValueChanged)
         {
             OnValueChanged+=onValueChanged;
         }
 
-        public void RemoveListener(OnValueChanged onValueChanged)
+        public void RemoveListener(ValueChangeAction onValueChanged)
         {
             OnValueChanged-=onValueChanged;
         }

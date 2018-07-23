@@ -6,6 +6,6 @@ namespace Client.UI
 {
 	public class UIContainer : UIComponent 
 	{
-
+		private Dictionary<string,UIComponent> components = new Dictionary<string,UIComponent>();
 	}
 }

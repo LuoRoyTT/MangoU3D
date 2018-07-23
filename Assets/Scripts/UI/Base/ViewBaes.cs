@@ -10,7 +10,7 @@ namespace Client.UI
 	public class ViewBase : UIContainer 
 	{
 		private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
-		 private Dictionary<int,List<Action<UINotifiction>>> UICommandMaps = new Dictionary<int,List<Action<UINotifiction>>>();
+		private Dictionary<int,Action<UINotifiction>> UINotifictionMaps = new Dictionary<int,Action<UINotifiction>>();
 		private ModuleBase module;
 		private BindableProperty bindableViewModel;
 
@@ -27,16 +27,16 @@ namespace Client.UI
 			}
 		}
 
-        public override void Initialize()
-		{
-			base.Initialize();
-			methodInfoMap.InitMethods(this.GetType());
-			methodInfoMap.InvokeMethod(this,"initialize");
+        // public override void Initialize()
+		// {
+		// 	base.Initialize();
+		// 	methodInfoMap.InitMethods(this.GetType());
+		// 	methodInfoMap.InvokeMethod(this,"initialize");
 
-		}
+		// }
 		private void OnViewValueChanged(object oldModel,object newModel)
 		{
-			methodInfoMap.InvokeMethod(this,"OnBindValue");
+			//methodInfoMap.InvokeMethod(this,"OnBindValue");
 			if(oldModel!=null)
 			{
 				(oldModel as ViewModelBase).RemoveView(this);
@@ -52,9 +52,20 @@ namespace Client.UI
 			Model.ReceiveCommand(commandID,command);
 		}
 
-		public void OnNotifiction(int NotifictionID,UINotifiction notifictuin)
+		public void OnNotifiction(int notifictionID,UINotifiction notifiction)
 		{
-
+            if(UINotifictionMaps.ContainsKey(notifictionID))
+            {
+                Action<UINotifiction> notifictions = UINotifictionMaps[notifictionID];
+                if(notifictions!=null)
+                {
+					notifictions(notifiction);
+                } 
+            }
+            else
+            {
+                Debug.LogError("");
+            }
 		}
 	}
 }

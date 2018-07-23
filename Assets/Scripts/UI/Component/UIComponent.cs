@@ -6,10 +6,15 @@ namespace Client.UI
 {
 	public class UIComponent : MonoBehaviour
 	{
-		public virtual void Initialize(){}
+		private UIContainer containercontainer;
+		public virtual void Initialize(UIContainer container)
+		{
+			containercontainer = container;
+		}
 		protected virtual void OnCreate(){}
 		protected virtual void Appear(){}
 		protected virtual void Hide(){}
 		protected virtual void OnClose(){}
+		public virtual void Reset(){}
 	}
 }

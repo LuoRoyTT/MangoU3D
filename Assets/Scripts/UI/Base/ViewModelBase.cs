@@ -17,7 +17,7 @@ namespace Client.UI
         private ModuleBase module;
         private List<ViewBase> views=new List<ViewBase>();
 
-        private Dictionary<int,List<Action<UICommad>>> UICommandMaps = new Dictionary<int,List<Action<UICommad>>>();
+        private Dictionary<int,Action<UICommad>> UICommandMaps = new Dictionary<int,Action<UICommad>>();
 
         public ViewModelBase(ModuleBase module)
         {
@@ -47,13 +47,10 @@ namespace Client.UI
         {
             if(UICommandMaps.ContainsKey(commandID))
             {
-                List<Action<UICommad>> commands = UICommandMaps[commandID];
-                if(commands!=null && commands.Count!=0)
+                Action<UICommad> commands = UICommandMaps[commandID];
+                if(commands!=null)
                 {
-                    for (int i = 0; i < commands.Count; i++)
-                    {
-                        commands[i](command);
-                    }
+                    commands(command);
                 } 
             }
             else
@@ -72,21 +69,23 @@ namespace Client.UI
         {
             if(UICommandMaps.ContainsKey(commandID))
             {
-                List<Action<UICommad>> commands = UICommandMaps[commandID];
-                commands.Add(command);
+                Action<UICommad> commands = UICommandMaps[commandID];
+                commands +=command;
             }
             else
             {
-                UICommandMaps.Add(commandID,new List<Action<UICommad>>(){command});
+                Action<UICommad> commands = null; 
+                commands+=command;
+                UICommandMaps.Add(commandID,commands);
             }
         }
         protected void RemoveUIEventListeners(int commandID,Action<UICommad> command)
         {
             if(UICommandMaps.ContainsKey(commandID))
             {
-                List<Action<UICommad>> commands = UICommandMaps[commandID];
-                commands.Remove(command);
-                if(commands.Count==0)
+                Action<UICommad> commands = UICommandMaps[commandID];
+                commands-=command;
+                if(commands==null)
                 {
                     UICommandMaps.Remove(commandID);
                 }
