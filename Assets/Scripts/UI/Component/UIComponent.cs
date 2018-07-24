@@ -6,10 +6,21 @@ namespace Client.UI
 {
 	public class UIComponent : MonoBehaviour
 	{
-		private UIContainer containercontainer;
-		public virtual void Initialize(UIContainer container)
+		public string Name
 		{
-			containercontainer = container;
+			get
+			{
+				return gameObject.name;
+			}
+		}
+		protected UIContainer container;
+		protected bool initialized;
+		public void Initialize(UIContainer container)
+		{
+			if(initialized) return;
+			initialized=true;
+			this.container = container;
+			OnCreate();
 		}
 		protected virtual void OnCreate(){}
 		protected virtual void Appear(){}

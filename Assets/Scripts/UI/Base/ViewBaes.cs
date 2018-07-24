@@ -27,13 +27,14 @@ namespace Client.UI
 			}
 		}
 
-        // public override void Initialize()
-		// {
-		// 	base.Initialize();
-		// 	methodInfoMap.InitMethods(this.GetType());
-		// 	methodInfoMap.InvokeMethod(this,"initialize");
 
-		// }
+		protected override void OnCreate()
+		{
+			methodInfoMap.InitMethods(this.GetType());
+			base.OnCreate();
+			
+		}
+
 		private void OnViewValueChanged(object oldModel,object newModel)
 		{
 			//methodInfoMap.InvokeMethod(this,"OnBindValue");
