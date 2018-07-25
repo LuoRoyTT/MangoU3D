@@ -30,9 +30,8 @@ namespace Client.UI
 
 		protected override void OnCreate()
 		{
-			methodInfoMap.InitMethods(this.GetType());
 			base.OnCreate();
-			
+			methodInfoMap.InitMethods(this.GetType());	
 		}
 
 		private void OnViewValueChanged(object oldModel,object newModel)
