@@ -5,16 +5,19 @@ using UnityEngine;
 
 namespace Client.Framework
 {
-	public class GameObjectPool : MonoSingleton<GameObjectPool> {
-
-		// Use this for initialization
-		void Start () {
-			
-		}
+	public class GameObjectPool : MonoSingleton<GameObjectPool> 
+	{
 		
-		// Update is called once per frame
-		void Update () {
-			
+		public GameObject Create(string name)
+		{
+			return null;
 		}
+		public void Recycle(GameObject go)
+		{
+
+		}
+
+
+
 	}
 }
