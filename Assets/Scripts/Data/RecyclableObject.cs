@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Client.Data
 {
-	public abstract class RecyclableData 
+	public abstract class RecyclableObject 
 	{ 
 		public abstract string ClassKey{get;}
 		public void Release()
 		{
 			OnRelease();
-			RecyclableDataPool.Release(this);
+			RecyclableObjectPool.Release(this);
 		}
 		public virtual void OnUse()
 		{

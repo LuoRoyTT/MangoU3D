@@ -7,28 +7,28 @@ using UnityEngine;
 namespace Client.Data
 {
 
-    public class RecyclableDataPool
+    public class RecyclableObjectPool
     {
 		public Type type;
 		public string classKey;
-		public Stack<RecyclableData> unusedobjs = new Stack<RecyclableData>();
-		private static Dictionary<string,RecyclableDataPool> poolMaps = new Dictionary<string, RecyclableDataPool>();
-		public RecyclableDataPool()
+		public Stack<RecyclableObject> unusedobjs = new Stack<RecyclableObject>();
+		private static Dictionary<string,RecyclableObjectPool> poolMaps = new Dictionary<string, RecyclableObjectPool>();
+		public RecyclableObjectPool()
 		{
 			Init();
 		}
-		public RecyclableDataPool(Type type,string classKey)
+		public RecyclableObjectPool(Type type,string classKey)
 		{
 			this.type=type;
 			this.classKey=classKey;
 		}
 		public static void Init()
 		{
-			if (RecyclableDataPool.poolMaps.Count > 0)
+			if (RecyclableObjectPool.poolMaps.Count > 0)
 			{
 				return;
 			}
-			Type typeFromHandle = typeof(RecyclableDataPool);
+			Type typeFromHandle = typeof(RecyclableObjectPool);
 			Type[] types = typeFromHandle.Assembly.GetTypes();
 			for (int i = 0; i < types.Length; i++)
 			{
@@ -37,18 +37,18 @@ namespace Client.Data
 				{
 					FieldInfo field = type.GetField("CLASS_KEY", BindingFlags.Static|BindingFlags.Public);
 					string key = (string)field.GetValue(null);
-					RecyclableDataPool pool = new RecyclableDataPool(type,key);
-					if(!RecyclableDataPool.poolMaps.ContainsKey(pool.classKey))
+					RecyclableObjectPool pool = new RecyclableObjectPool(type,key);
+					if(!RecyclableObjectPool.poolMaps.ContainsKey(pool.classKey))
 					{
-						RecyclableDataPool.poolMaps.Add(pool.classKey,pool);
+						RecyclableObjectPool.poolMaps.Add(pool.classKey,pool);
 					}
 				}
 			}
 		}
 
-		public static RecyclableData Get(string classKey)
+		public static RecyclableObject Get(string classKey)
 		{
-			RecyclableDataPool pool;
+			RecyclableObjectPool pool;
 			if(poolMaps.TryGetValue(classKey,out pool))
 			{
 				if(pool.unusedobjs.Count>0)
@@ -57,7 +57,7 @@ namespace Client.Data
 				}
 				else
 				{
-					return (RecyclableData)Activator.CreateInstance(pool.type);
+					return (RecyclableObject)Activator.CreateInstance(pool.type);
 				}
 			}
 			else
@@ -67,13 +67,13 @@ namespace Client.Data
 			}
 
 		}
-		public static RecyclableDataPool GetPool(string classKey)
+		public static RecyclableObjectPool GetPool(string classKey)
 		{
 			return poolMaps[classKey];
 		}
-	    public static void Release(RecyclableData recyclableData)
+	    public static void Release(RecyclableObject recyclableData)
         {
-            RecyclableDataPool pool;
+            RecyclableObjectPool pool;
 			if(poolMaps.TryGetValue(recyclableData.ClassKey,out pool))
 			{
 				pool.unusedobjs.Push(recyclableData);

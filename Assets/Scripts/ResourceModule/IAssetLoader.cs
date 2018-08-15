@@ -4,8 +4,16 @@ using UnityEngine;
 
 namespace Client.ResourceModule
 {
-	public interface IAssetLoader
+	public enum eLoadError
 	{
 		
+	}
+	public interface IAssetLoader<T>
+	{
+		T m_asset{get;}
+        bool m_completed { get; }
+        bool m_success { get; }
+        eLoadError error { get; }
+
 	} 
 }
