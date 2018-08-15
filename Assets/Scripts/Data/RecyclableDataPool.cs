@@ -73,11 +73,22 @@ namespace Client.Data
 		}
 	    public static void Release(RecyclableData recyclableData)
         {
-            
+            RecyclableDataPool pool;
+			if(poolMaps.TryGetValue(recyclableData.ClassKey,out pool))
+			{
+				pool.unusedobjs.Push(recyclableData);
+			}
         }
-		public static void Clear(RecyclableDataPool pool)
+		public void Clear()
 		{
-			
+			unusedobjs.Clear();
+		}
+		public static void ClearAll()
+		{
+			foreach (var pool in poolMaps.Values)
+			{
+				pool.unusedobjs.Clear();
+			}
 		}
     }
 }
