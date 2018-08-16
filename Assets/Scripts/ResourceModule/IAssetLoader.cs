@@ -6,14 +6,17 @@ namespace Client.ResourceModule
 {
 	public enum eLoadError
 	{
-		
+		None
 	}
-	public interface IAssetLoader<T>
+	public interface IAssetLoader
+	{
+		Object m_asset{get;}
+        eLoadError Error { get; }
+
+	} 
+	public interface IAssetLoader<T>:IAssetLoader 
 	{
 		T m_asset{get;}
-        bool m_completed { get; }
-        bool m_success { get; }
-        eLoadError error { get; }
 
 	} 
 }
