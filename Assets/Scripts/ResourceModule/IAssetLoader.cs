@@ -12,6 +12,7 @@ namespace Client.ResourceModule
 	{
 		Object m_asset{get;}
         eLoadError Error { get; }
+		void Init();
 
 	} 
 	public interface IAssetLoader<T>:IAssetLoader 

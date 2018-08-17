@@ -17,6 +17,10 @@ namespace Client.ResourceModule
         public eLoadError Error {get{return error;}}
         private eLoadError error = eLoadError.None;
 
+        public void Init()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
 
