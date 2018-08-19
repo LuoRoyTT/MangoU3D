@@ -11,6 +11,8 @@ namespace Client.ResourceModule
 	public interface IAssetLoader
 	{
 		Object Asset{get;}
+		float Progerss{get;}
+		bool Compelete{get;}
         eLoadError Error { get; }
 		void Init();
 
