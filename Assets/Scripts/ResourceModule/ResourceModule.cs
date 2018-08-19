@@ -27,7 +27,6 @@ namespace Client.ResourceModule
 			else
 			{
 				loader = new T();
-				loader.Init();
 				return (T)loader;
 			}
 		}
@@ -35,9 +34,9 @@ namespace Client.ResourceModule
 		{
 
 		}
-		public void ReleaseLoader()
+		public void ReleaseLoader(string assetName)
 		{
-
+            
 		}
 	}
 }
