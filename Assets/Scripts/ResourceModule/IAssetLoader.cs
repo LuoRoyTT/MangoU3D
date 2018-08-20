@@ -4,17 +4,19 @@ using UnityEngine;
 
 namespace Client.ResourceModule
 {
-	public enum eLoadError
+	public enum eLoadStatus
 	{
-		None
+
 	}
 	public interface IAssetLoader
 	{
+		string AssetName{get;}
 		Object Asset{get;}
 		float Progress{get;}
 		bool Compeleted{get;}
-        eLoadError Error { get; }
-		void Init();
+		eLoadStatus Status{get;}
+		void Load();
+		void Recycle();
 
 	} 
 	public interface IAssetLoader<T>:IAssetLoader 

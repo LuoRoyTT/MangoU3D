@@ -9,7 +9,8 @@ namespace Client.ResourceModule
     {
         public static string CLASS_KEY="AssetBundleLoader";
         public override string ClassKey {get{return CLASS_KEY;}}
-
+        public string AssetName {get{return assetName;}}
+        private string assetName;
         public AssetBundle Asset {get{return asset as AssetBundle;}}
         Object IAssetLoader.Asset {get{return asset;}}
         private Object asset;
@@ -18,22 +19,32 @@ namespace Client.ResourceModule
         public float progress;
 
         public bool Compeleted{get{return compeleted;}}
+
+        public eLoadStatus Status{get{return status;}}
+        private eLoadStatus status;
+
         private bool compeleted;
-		
-        public eLoadError Error {get{return error;}}
-        private eLoadError error = eLoadError.None;
 
         public AssetBundleLoader()
         {
-            Init();
+
         }
-        public void Init()
+        public void Load()
         {
             throw new System.NotImplementedException();
         }
         public override void OnUse()
         {
             
+        }
+
+        public void Recycle()
+        {
+            ResourceModule.Instance.Recycle(assetName);
+        }
+        public override void OnRelease()
+        {
+            ResourceModule.Instance.ReleaseLoader(assetName);
         }
     }
 }

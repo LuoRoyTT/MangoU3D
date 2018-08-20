@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Client.Core;
+using Client.Data;
 using UnityEngine;
 
 namespace Client.ResourceModule
@@ -9,6 +10,7 @@ namespace Client.ResourceModule
 	public class ResourceModule : MonoSingleton<ResourceModule> 
 	{
 		private Dictionary<string,IAssetLoader> loadersMap = new Dictionary<string,IAssetLoader>();
+		private List<IAssetLoader> waitForReleaseLoaders = new List<IAssetLoader>();
 		private IAssetLoader LoadAssetSyn(string assetName)
 		{
 			return null;
@@ -17,18 +19,31 @@ namespace Client.ResourceModule
 		{
 			return null;
 		}
-		public T CreateLoader<T>(string assetName) where T:IAssetLoader,new()
+		public T Get<T>(string assetName) where T:RecyclableObject,IAssetLoader
 		{
-			IAssetLoader loader;
-			if(loadersMap.TryGetValue(assetName,out loader))
+			T loader = null;
+			if(loadersMap.ContainsKey(assetName))
 			{
-				return (T)loader;
+				loader=(T)loadersMap[assetName];
 			}
 			else
 			{
-				loader = new T();
-				return (T)loader;
+				Debug.LogError("ResourceModule中不存在"+assetName+"的loader");
 			}
+			return loader;
+		}
+		public void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader
+		{
+			T loader = null;
+			if(loadersMap.ContainsKey(assetName))
+			{
+				loader=(T)loadersMap[assetName];
+			}
+			else
+			{
+				loader = (T)RecyclableObjectPool.Get(loader.ClassKey);
+			}
+			loader.Load();
 		}
 		public void Recycle(string assetName)
 		{
