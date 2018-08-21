@@ -6,7 +6,7 @@ namespace Client.Data
 {
 	public class IAsyncObject
 	{
-
+		
 
 	}
 }
