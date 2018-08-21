@@ -1,21 +1,26 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Client.Data;
 using UnityEngine;
 
 namespace Client.ResourceModule
 {
 	public enum eLoadStatus
 	{
-
+		Release,
+		idle,
+		Loading,
+		Loaded
 	}
 	public interface IAssetLoader
 	{
 		string AssetName{get;}
-		Object Asset{get;}
+        UnityEngine.Object Asset {get;}
 		float Progress{get;}
 		bool Compeleted{get;}
 		eLoadStatus Status{get;}
-		void Load();
+		void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader;
 		void Recycle();
 
 	} 

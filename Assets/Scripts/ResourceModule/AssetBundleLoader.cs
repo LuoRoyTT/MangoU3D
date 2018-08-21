@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
@@ -12,8 +13,8 @@ namespace Client.ResourceModule
         public string AssetName {get{return assetName;}}
         private string assetName;
         public AssetBundle Asset {get{return asset as AssetBundle;}}
-        Object IAssetLoader.Asset {get{return asset;}}
-        private Object asset;
+        UnityEngine.Object IAssetLoader.Asset {get{return asset;}}
+        private UnityEngine.Object asset;
 
         public float Progress{get{return progress;}}
         public float progress;
@@ -29,13 +30,9 @@ namespace Client.ResourceModule
         {
 
         }
-        public void Load()
-        {
-            throw new System.NotImplementedException();
-        }
         public override void OnUse()
         {
-            
+            status = eLoadStatus.idle;
         }
 
         public void Recycle()
@@ -44,7 +41,15 @@ namespace Client.ResourceModule
         }
         public override void OnRelease()
         {
+            status = eLoadStatus.Release;
             ResourceModule.Instance.ReleaseLoader(assetName);
+        }
+
+        public void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader
+        {
+            this.assetName = assetName;
+            string path = ResourceSetting.GetAssetPathByAssetName(assetName);
+            throw new NotImplementedException();
         }
     }
 }

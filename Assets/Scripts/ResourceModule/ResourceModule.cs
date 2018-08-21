@@ -21,16 +21,15 @@ namespace Client.ResourceModule
 		}
 		public T Get<T>(string assetName) where T:RecyclableObject,IAssetLoader
 		{
-			T loader = null;
 			if(loadersMap.ContainsKey(assetName))
 			{
-				loader=(T)loadersMap[assetName];
+				return (T)loadersMap[assetName];
 			}
 			else
 			{
-				Debug.LogError("ResourceModule中不存在"+assetName+"的loader");
+				return null;
 			}
-			return loader;
+			
 		}
 		public void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader
 		{
@@ -43,7 +42,17 @@ namespace Client.ResourceModule
 			{
 				loader = (T)RecyclableObjectPool.Get(loader.ClassKey);
 			}
-			loader.Load();
+			string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
+			AssetBundleLoader bundleLoader = Get<AssetBundleLoader>(bundleName);
+			if(bundleLoader==null) 
+			{
+				bundleLoader.Load(bundleName,onFinished);
+			}
+			else
+			{
+				loader.Load(assetName,onFinished);
+			}
+
 		}
 		public void Recycle(string assetName)
 		{

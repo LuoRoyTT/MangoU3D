@@ -65,7 +65,28 @@ namespace Client.Data
 				Debug.LogError("不存在CLASS_KEY:"+classKey);
 				return null;
 			}
-
+		}
+		public static T Get<T>() where T : RecyclableObject
+		{
+			RecyclableObjectPool pool;
+			T obj = null;
+			if(poolMaps.TryGetValue(obj.ClassKey,out pool))
+			{
+				if(pool.unusedobjs.Count>0)
+				{
+					obj = (T)pool.unusedobjs.Pop();
+					return obj;
+				}
+				else
+				{
+					return (T)Activator.CreateInstance(pool.type);
+				}
+			}
+			else
+			{
+				Debug.LogError("不存在CLASS_KEY:"+obj.ClassKey);
+				return null;
+			}
 		}
 		public static RecyclableObjectPool GetPool(string classKey)
 		{
