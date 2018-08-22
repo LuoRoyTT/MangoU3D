@@ -7,14 +7,24 @@ namespace Client.Async
 {
     public class CoroutineAsyncObject : IAsyncObject
     {
+        private IEnumerator ie;
+        public IAsyncObject Next { get; set; }
+
+        public void Init()
+        {
+
+        }
         public void Compelete()
         {
-            throw new System.NotImplementedException();
+            if(Next!=null)
+            {
+                Next.Start();
+            }
         }
 
         public void Start()
         {
-            throw new System.NotImplementedException();
+            AsyncCenter.Instance.GotoNext(ie,Compelete);
         }
     }
 }
