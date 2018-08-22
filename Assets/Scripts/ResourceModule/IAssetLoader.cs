@@ -20,7 +20,7 @@ namespace Client.ResourceModule
 		float Progress{get;}
 		bool Compeleted{get;}
 		eLoadStatus Status{get;}
-		void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader;
+		void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader;
 		void Recycle();
 
 	} 

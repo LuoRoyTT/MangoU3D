@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace Client.ResourceModule
 {
-    public class AssetBundleLoader : RecyclableObject,IAssetLoader<AssetBundle>
+    public class AssetBundleLoader : IRecyclableObject,IAssetLoader<AssetBundle>
     {
         public static string CLASS_KEY="AssetBundleLoader";
-        public override string ClassKey {get{return CLASS_KEY;}}
+        public string ClassKey {get{return CLASS_KEY;}}
         public string AssetName {get{return assetName;}}
         private string assetName;
         public AssetBundle Asset {get{return asset as AssetBundle;}}
@@ -30,7 +30,7 @@ namespace Client.ResourceModule
         {
 
         }
-        public override void OnUse()
+        public void OnUse()
         {
             status = eLoadStatus.idle;
         }
@@ -39,13 +39,13 @@ namespace Client.ResourceModule
         {
             ResourceModule.Instance.Recycle(assetName);
         }
-        public override void OnRelease()
+        public void OnRelease()
         {
             status = eLoadStatus.Release;
             ResourceModule.Instance.ReleaseLoader(assetName);
         }
 
-        public void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader
+        public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader
         {
             this.assetName = assetName;
             string path = ResourceSetting.GetAssetPathByAssetName(assetName);

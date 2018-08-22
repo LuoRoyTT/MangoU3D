@@ -4,10 +4,12 @@ using UnityEngine;
 
 namespace Client.Data
 {
-	public interface IAsyncObject
-	{
-		void Start();
-		void Compelete();
-	} 
-}
+	public  interface IRecyclableObject
+	{ 
+		string ClassKey{get;}
+		void OnUse();
 
+		void OnRelease();
+
+	}
+}

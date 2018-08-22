@@ -7,13 +7,13 @@ using UnityEngine;
 
 namespace Client.Async
 {
-    public class AsyncQueue : RecyclableObject
+    public class AsyncQueue : IRecyclableObject
     {
 		public static string CLASS_KEY = "AsyncQueue";
         private static int APPEND_COUNT = 20;
         private static int INSERT_COUNT = 20;
         private static int INSERTCALLBACK_COUNT = 20;
-        public override string ClassKey{get{return CLASS_KEY;}}
+        public string ClassKey{get{return CLASS_KEY;}}
 		private Queue<IAsyncObject> appendCalls;
         private AsyncCallback appendCallback;
         private List<IAsyncObject> insertCalls;
@@ -53,6 +53,16 @@ namespace Client.Async
         public AsyncQueue PrependInterval(float interval)
         {
             return this;
+        }
+
+        public void OnUse()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnRelease()
+        {
+            throw new NotImplementedException();
         }
     }
 }

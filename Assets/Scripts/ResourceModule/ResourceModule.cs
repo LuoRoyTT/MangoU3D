@@ -19,7 +19,7 @@ namespace Client.ResourceModule
 		{
 			return null;
 		}
-		public T Get<T>(string assetName) where T:RecyclableObject,IAssetLoader
+		public T Get<T>(string assetName) where T:IRecyclableObject,IAssetLoader
 		{
 			if(loadersMap.ContainsKey(assetName))
 			{
@@ -27,13 +27,13 @@ namespace Client.ResourceModule
 			}
 			else
 			{
-				return null;
+				return default(T);
 			}
 			
 		}
-		public void Load<T>(string assetName,Action<T> onFinished) where T:RecyclableObject,IAssetLoader
+		public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader
 		{
-			T loader = null;
+			T loader = default(T);
 			if(loadersMap.ContainsKey(assetName))
 			{
 				loader=(T)loadersMap[assetName];

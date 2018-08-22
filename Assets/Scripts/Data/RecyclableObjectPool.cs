@@ -11,7 +11,7 @@ namespace Client.Data
     {
 		public Type type;
 		public string classKey;
-		public Stack<RecyclableObject> unusedobjs = new Stack<RecyclableObject>();
+		public Stack<IRecyclableObject> unusedobjs = new Stack<IRecyclableObject>();
 		private static Dictionary<string,RecyclableObjectPool> poolMaps = new Dictionary<string, RecyclableObjectPool>();
 		public RecyclableObjectPool()
 		{
@@ -46,7 +46,7 @@ namespace Client.Data
 			}
 		}
 
-		public static RecyclableObject Get(string classKey)
+		public static IRecyclableObject Get(string classKey)
 		{
 			RecyclableObjectPool pool;
 			if(poolMaps.TryGetValue(classKey,out pool))
@@ -57,7 +57,7 @@ namespace Client.Data
 				}
 				else
 				{
-					return (RecyclableObject)Activator.CreateInstance(pool.type);
+					return (IRecyclableObject)Activator.CreateInstance(pool.type);
 				}
 			}
 			else
@@ -66,10 +66,10 @@ namespace Client.Data
 				return null;
 			}
 		}
-		public static T Get<T>() where T : RecyclableObject
+		public static T Get<T>() where T : IRecyclableObject
 		{
 			RecyclableObjectPool pool;
-			T obj = null;
+			T obj = default(T);
 			if(poolMaps.TryGetValue(obj.ClassKey,out pool))
 			{
 				if(pool.unusedobjs.Count>0)
@@ -85,19 +85,20 @@ namespace Client.Data
 			else
 			{
 				Debug.LogError("不存在CLASS_KEY:"+obj.ClassKey);
-				return null;
+				return obj;
 			}
 		}
 		public static RecyclableObjectPool GetPool(string classKey)
 		{
 			return poolMaps[classKey];
 		}
-	    public static void Release(RecyclableObject recyclableData)
+	    public static void Release(IRecyclableObject recyclableData)
         {
             RecyclableObjectPool pool;
 			if(poolMaps.TryGetValue(recyclableData.ClassKey,out pool))
 			{
 				pool.unusedobjs.Push(recyclableData);
+				recyclableData.OnRelease();
 			}
         }
 		public void Clear()
