@@ -8,22 +8,45 @@ using UnityEngine;
 namespace Client.Async
 {
     public delegate void AsyncThreadDelegateFull(object param, Action next);
-    public class ThreadAsyncObject : IAsyncObject
+    public class ThreadAsyncObject : AsyncObject,IRecyclableObject
     {
+        public static string CLASS_KEY = "CoroutineAsyncObject";
+        public override string ClassKey{get{return CLASS_KEY;}}
         private AsyncThreadDelegateFull threadAction;
-        IAsyncObject IAsyncObject.Next { get; set; }
-        public void Init()
+        private object param;
+
+        public override void OnUse()
         {
-            
-        }
-        public void Compelete()
-        {
-            
+
         }
 
-        public void Start()
+        public override void OnRelease()
         {
-            
+            threadAction = null;
+            param = null;
+            Next = null;
+            onCompelete = null;
+        }
+
+        protected override IEnumerator WaitNext()
+        {
+            yield return AsyncCenter.Instance.StartCoroutine(_Thread(threadAction,param));
+            Compelete();
+        }
+        private IEnumerator _Thread(AsyncThreadDelegateFull threadCalAction, object param = null)
+        {
+            bool waitThreadFinish = false;
+
+            var thread = new Thread(() =>
+            {
+                Action customNext = () => { waitThreadFinish = true; };
+                threadCalAction(param, customNext);
+            });
+
+            thread.Start();
+
+            while (!waitThreadFinish)
+                yield return null;
         }
     }
 }

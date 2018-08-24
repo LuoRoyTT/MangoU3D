@@ -10,15 +10,9 @@ namespace Client.Async
     public class AsyncQueue : IRecyclableObject
     {
 		public static string CLASS_KEY = "AsyncQueue";
-        private static int APPEND_COUNT = 20;
         public string ClassKey{get{return CLASS_KEY;}}
-		private IAsyncObject header;
-        private AsyncCallback appendCallback;
-        public AsyncQueue()
-        {
-            
-        }
-        public AsyncQueue Append(IAsyncObject async)
+		private AsyncObject header;
+        public AsyncQueue Append(AsyncObject async)
         {
             if(header==null)
             {
@@ -26,25 +20,20 @@ namespace Client.Async
             }
             else
             {
-                header.Next = async;
+                header.SetNext(async);
             }
             return this;
         }
-        public AsyncQueue AppendCallback(Callback action)
+        public AsyncQueue Prepend(AsyncObject async)
         {
-            appendCallback.AddListener(action);
-            return this;
-        }
-        public AsyncQueue Prepend(IAsyncObject async)
-        {
-            return this;
-        }
-        public AsyncQueue PrependCallback(Action callback)
-        {
-            return this;
-        }
-        public AsyncQueue PrependInterval(float interval)
-        {
+            if(header==null)
+            {
+                header = async;
+            }
+            else
+            {
+                async.SetNext(header);
+            }
             return this;
         }
 
@@ -55,7 +44,13 @@ namespace Client.Async
 
         public void OnRelease()
         {
-            throw new NotImplementedException();
+            AsyncObject current = header;
+            while (current!=null)
+            {
+                AsyncObject tmp = current;
+                current = current.Next;
+                RecyclableObjectPool.Release(tmp);
+            }
         }
     }
 }

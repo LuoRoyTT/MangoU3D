@@ -1,36 +1,35 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
 namespace Client.Async
 {
-    public class CoroutineAsyncObject : AsyncObject,IRecyclableObject
+    public class IEnumeratorAsyncObject : AsyncObject,IRecyclableObject
     {
-        private Coroutine co;
+        private IEnumerator enumerator;
         public static string CLASS_KEY = "CoroutineAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         public override void OnUse()
         {
-            throw new NotImplementedException();
+
         }
-        public CoroutineAsyncObject SetCoroutine(Coroutine co)
+        public IEnumeratorAsyncObject SetEnumerator(IEnumerator enumerator)
         {
-            this.co = co;
+            this.enumerator = enumerator;
             return this;
         }
         public override void OnRelease()
         {
-            co = null;
+            enumerator = null;
             Next = null;
             onCompelete = null;
         }
+
         protected override IEnumerator WaitNext()
         {
-            yield return co;
+            yield return AsyncCenter.Instance.StartCoroutine(enumerator);
             Compelete();
         }
     }
 }
-
