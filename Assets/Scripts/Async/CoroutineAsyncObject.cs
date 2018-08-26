@@ -24,12 +24,12 @@ namespace Client.Async
         {
             co = null;
             Next = null;
-            onCompelete = null;
+            onComplete = null;
         }
         protected override IEnumerator WaitNext()
         {
             yield return co;
-            Compelete();
+            Complete();
         }
     }
 }

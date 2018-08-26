@@ -8,11 +8,17 @@ namespace Client.Data
 {
 	public abstract class AsyncObject:IRecyclableObject 
 	{
+		private AsyncQueue queue = null;
 		protected Action onStart;
-		protected Action onCompelete;
+		protected Action onComplete;
 		public AsyncObject Next{get;protected set;}
 
         public abstract string ClassKey {get;}
+
+		public void SetQueue(AsyncQueue queue)
+		{
+			this.queue = queue;
+		}
 
         public AsyncObject SetNext(AsyncObject next)
 		{
@@ -28,9 +34,9 @@ namespace Client.Data
 			this.onStart = onStart;
 			return this;
 		}
-		public AsyncObject SetOnCompelete(Action onCompelete)
+		public AsyncObject SetOnComplete(Action onComplete)
 		{
-			this.onCompelete = onCompelete;
+			this.onComplete = onComplete;
 			return this;
 		}
 		public void Start()
@@ -42,16 +48,20 @@ namespace Client.Data
 			AsyncCenter.Instance.StartCoroutine(WaitNext());
 		}
 		protected abstract IEnumerator WaitNext();
-		protected void Compelete()
+		protected void Complete()
 		{
-			if(onCompelete!=null)
+			if(onComplete!=null)
             {
-                onCompelete();
+                onComplete();
             }
             if(Next!=null)
             {
                 Next.Start();
             }
+			else
+			{
+				queue.Complete();
+			}
 		}
 
         public abstract void OnUse();

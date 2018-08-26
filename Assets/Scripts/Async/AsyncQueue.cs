@@ -7,11 +7,22 @@ using UnityEngine;
 
 namespace Client.Async
 {
+    public enum eAsyncQueueState
+    {
+        Null,
+        Idle,
+        Doing,
+        Fininshed
+
+    }
     public class AsyncQueue : IRecyclableObject
     {
 		public static string CLASS_KEY = "AsyncQueue";
         public string ClassKey{get{return CLASS_KEY;}}
+        public eAsyncQueueState Status{get;private set;}
 		private AsyncObject header;
+        private Action asyncOnStart;
+        private Action asyncOnComplete;
         public AsyncQueue Append(AsyncObject async)
         {
             if(header==null)
@@ -23,6 +34,10 @@ namespace Client.Async
                 header.SetNext(async);
             }
             return this;
+        }
+        public void AppendCallback(Action onComplete)
+        {
+            asyncOnComplete += onComplete;
         }
         public AsyncQueue Prepend(AsyncObject async)
         {
@@ -36,10 +51,33 @@ namespace Client.Async
             }
             return this;
         }
-
+        public void PrependCallback(Action onStart)
+        {
+            asyncOnStart += onStart;
+        }
+        public void Start()
+        {
+            if (asyncOnStart != null)
+            {
+                asyncOnStart();
+            }
+            Status = eAsyncQueueState.Doing;
+            header.Start();
+        }
+        public void Complete()
+        {
+            if(asyncOnComplete != null)
+            {
+                asyncOnComplete();
+            }
+            Status = eAsyncQueueState.Fininshed;
+        }
         public void OnUse()
         {
-            throw new NotImplementedException();
+            header = null;
+            asyncOnStart = null;
+            asyncOnComplete = null;
+            Status = eAsyncQueueState.Idle;
         }
 
         public void OnRelease()
@@ -51,6 +89,10 @@ namespace Client.Async
                 current = current.Next;
                 RecyclableObjectPool.Release(tmp);
             }
+            header = null;
+            asyncOnStart = null;
+            asyncOnComplete = null;
+            Status = eAsyncQueueState .Null;
         }
     }
 }

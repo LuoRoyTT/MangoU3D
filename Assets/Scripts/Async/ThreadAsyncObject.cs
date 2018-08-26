@@ -10,7 +10,7 @@ namespace Client.Async
     public delegate void AsyncThreadDelegateFull(object param, Action next);
     public class ThreadAsyncObject : AsyncObject,IRecyclableObject
     {
-        public static string CLASS_KEY = "CoroutineAsyncObject";
+        public static string CLASS_KEY = "ThreadAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         private AsyncThreadDelegateFull threadAction;
         private object param;
@@ -25,13 +25,13 @@ namespace Client.Async
             threadAction = null;
             param = null;
             Next = null;
-            onCompelete = null;
+            onComplete = null;
         }
 
         protected override IEnumerator WaitNext()
         {
             yield return AsyncCenter.Instance.StartCoroutine(_Thread(threadAction,param));
-            Compelete();
+            Complete();
         }
         private IEnumerator _Thread(AsyncThreadDelegateFull threadCalAction, object param = null)
         {

@@ -8,7 +8,7 @@ namespace Client.Async
     public class FrameAsyncObject : AsyncObject,IRecyclableObject
     {
         private int frameCount = 0;
-        public static string CLASS_KEY = "CoroutineAsyncObject";
+        public static string CLASS_KEY = "FrameAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         public override void OnUse()
         {
@@ -23,12 +23,12 @@ namespace Client.Async
         {
             frameCount = 0;
             Next = null;
-            onCompelete = null;
+            onComplete = null;
         }
         protected override IEnumerator WaitNext()
         {
             yield return AsyncCenter.Instance.StartCoroutine(Timer());
-            Compelete();
+            Complete();
         }
         private IEnumerator Timer()
         {

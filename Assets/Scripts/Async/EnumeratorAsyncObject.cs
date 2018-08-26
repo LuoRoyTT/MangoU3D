@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace Client.Async
 {
-    public class IEnumeratorAsyncObject : AsyncObject,IRecyclableObject
+    public class EnumeratorAsyncObject : AsyncObject,IRecyclableObject
     {
         private IEnumerator enumerator;
-        public static string CLASS_KEY = "CoroutineAsyncObject";
+        public static string CLASS_KEY = "EnumeratorAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         public override void OnUse()
         {
 
         }
-        public IEnumeratorAsyncObject SetEnumerator(IEnumerator enumerator)
+        public EnumeratorAsyncObject SetEnumerator(IEnumerator enumerator)
         {
             this.enumerator = enumerator;
             return this;
@@ -23,13 +23,13 @@ namespace Client.Async
         {
             enumerator = null;
             Next = null;
-            onCompelete = null;
+            onComplete = null;
         }
 
         protected override IEnumerator WaitNext()
         {
             yield return AsyncCenter.Instance.StartCoroutine(enumerator);
-            Compelete();
+            Complete();
         }
     }
 }

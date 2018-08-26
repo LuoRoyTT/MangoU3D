@@ -33,7 +33,7 @@ namespace Client.Core
 			return Instance;
 		}
 		
-		protected virtual void Init ()
+		protected virtual void Init()
 		{
 			
 		}

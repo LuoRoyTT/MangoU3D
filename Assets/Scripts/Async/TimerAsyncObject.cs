@@ -8,7 +8,7 @@ namespace Client.Async
     public class TimerAsyncObject : AsyncObject,IRecyclableObject
     {
         private float interval = 0f;
-        public static string CLASS_KEY = "CoroutineAsyncObject";
+        public static string CLASS_KEY = "TimerAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         public override void OnUse()
         {
@@ -23,12 +23,12 @@ namespace Client.Async
         {
             interval = 0f;
             Next = null;
-            onCompelete = null;
+            onComplete = null;
         }
         protected override IEnumerator WaitNext()
         {
             yield return AsyncCenter.Instance.StartCoroutine(Timer());
-            Compelete();
+            Complete();
         }
         private IEnumerator Timer()
         {
