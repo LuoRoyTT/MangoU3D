@@ -11,7 +11,8 @@ namespace Client.ResourceModule
 		Release,
 		idle,
 		Loading,
-		Loaded
+		Loaded,
+		Recycle
 	}
 	public interface IAssetLoader
 	{
@@ -20,6 +21,7 @@ namespace Client.ResourceModule
 		float Progress{get;}
 		bool Compeleted{get;}
 		eLoadStatus Status{get;}
+		void Init(string assetName);
 		void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader;
 		void Recycle();
 

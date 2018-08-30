@@ -20,15 +20,15 @@ namespace Client.ResourceModule
         public float progress;
 
         public bool Compeleted{get{return compeleted;}}
+        private bool compeleted;
 
         public eLoadStatus Status{get{return status;}}
         private eLoadStatus status;
 
-        private bool compeleted;
-
-        public AssetBundleLoader()
+        public void Init(string assetName)
         {
-
+            this.assetName = assetName;
+            progress = 0f;
         }
         public void OnUse()
         {
@@ -37,12 +37,13 @@ namespace Client.ResourceModule
 
         public void Recycle()
         {
-            ResourceModule.Instance.Recycle(assetName);
+            status = eLoadStatus.Recycle;
+            ResourceModule.Instance.Recycle(this);
         }
         public void OnRelease()
         {
+            asset = null;
             status = eLoadStatus.Release;
-            ResourceModule.Instance.ReleaseLoader(assetName);
         }
 
         public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader

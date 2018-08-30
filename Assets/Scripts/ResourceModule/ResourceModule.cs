@@ -9,8 +9,8 @@ namespace Client.ResourceModule
 { 
 	public class ResourceModule : MonoSingleton<ResourceModule> 
 	{
-		private Dictionary<string,IAssetLoader> loadersMap = new Dictionary<string,IAssetLoader>();
-		private List<IAssetLoader> waitForReleaseLoaders = new List<IAssetLoader>();
+		private Dictionary<string,IAssetLoader> loadersMap;
+		private List<IAssetLoader> waitForReleaseLoaders;
 		private IAssetLoader LoadAssetSyn(string assetName)
 		{
 			return null;
@@ -19,6 +19,7 @@ namespace Client.ResourceModule
 		{
 			return null;
 		}
+
 		public T Get<T>(string assetName) where T:IRecyclableObject,IAssetLoader
 		{
 			if(loadersMap.ContainsKey(assetName))
@@ -27,40 +28,38 @@ namespace Client.ResourceModule
 			}
 			else
 			{
-				return default(T);
+				int index = waitForReleaseLoaders.FindIndex((a)=>{return a.AssetName.Equals(assetName);});
+				if(index!=-1)
+				{
+					IAssetLoader loader = waitForReleaseLoaders[index];
+					waitForReleaseLoaders.Remove(loader);
+					return (T)loader;
+				}
+				else
+				{
+					return CreateLoader<T>(assetName);
+				}
 			}
-			
 		}
-		public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader
+		private T CreateLoader<T>(string assetName) where T:IRecyclableObject,IAssetLoader
 		{
-			T loader = default(T);
-			if(loadersMap.ContainsKey(assetName))
-			{
-				loader=(T)loadersMap[assetName];
-			}
-			else
-			{
-				loader = (T)RecyclableObjectPool.Get(loader.ClassKey);
-			}
-			string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
-			AssetBundleLoader bundleLoader = Get<AssetBundleLoader>(bundleName);
-			if(bundleLoader==null) 
-			{
-				bundleLoader.Load(bundleName,onFinished);
-			}
-			else
-			{
-				loader.Load(assetName,onFinished);
-			}
+			T loader = RecyclableObjectPool.Get<T>();
+			loader.Init(assetName);
+			return loader;
+		}
+        public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader
+		{
+			T loader = Get<T>(assetName);
+			loader.Load(assetName,onFinished);
+		}
+		public void Recycle(IAssetLoader loader)
+		{
+			loadersMap.Remove(loader.AssetName);
+			waitForReleaseLoaders.Add(loader);
+		}
+		private void ReleaseLoader()
+		{
 
-		}
-		public void Recycle(string assetName)
-		{
-
-		}
-		public void ReleaseLoader(string assetName)
-		{
-            
 		}
 	}
 }
