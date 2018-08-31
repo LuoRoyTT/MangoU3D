@@ -9,6 +9,7 @@ namespace Client.ResourceModule
     public class AssetBundleLoader : IRecyclableObject,IAssetLoader<AssetBundle>
     {
         public static string CLASS_KEY="AssetBundleLoader";
+        public static readonly int weight = 1;
         public string ClassKey {get{return CLASS_KEY;}}
         public string AssetName {get{return assetName;}}
         private string assetName;
@@ -19,8 +20,8 @@ namespace Client.ResourceModule
         public float Progress{get{return progress;}}
         public float progress;
 
-        public bool Compeleted{get{return compeleted;}}
-        private bool compeleted;
+        public int RefCount{get{return refCount;}}
+        private int refCount;
 
         public eLoadStatus Status{get{return status;}}
         private eLoadStatus status;
@@ -29,28 +30,39 @@ namespace Client.ResourceModule
         {
             this.assetName = assetName;
             progress = 0f;
+            refCount = 0;
+        }
+
+        public void Load(CachedCallback onCacheFinished) 
+        {
+            string path = ResourceSetting.GetAssetPathByAssetName(assetName);
+            ResourceModule.Instance.StartCoroutine(LoadAssetBundle(path,onCacheFinished));
+        }
+        private IEnumerator LoadAssetBundle(string path,CachedCallback onCacheFinished)
+        {
+            yield return null;
+            refCount++;
+            if(onCacheFinished!=null)
+            {
+                onCacheFinished(asset);
+            }
+        }
+        public void Recycle()
+        {
+            refCount--;
+            if (refCount==0)
+            {
+                ResourceModule.Instance.Recycle(this);
+            }
         }
         public void OnUse()
         {
             status = eLoadStatus.idle;
         }
-
-        public void Recycle()
-        {
-            status = eLoadStatus.Recycle;
-            ResourceModule.Instance.Recycle(this);
-        }
         public void OnRelease()
         {
             asset = null;
             status = eLoadStatus.Release;
-        }
-
-        public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader
-        {
-            this.assetName = assetName;
-            string path = ResourceSetting.GetAssetPathByAssetName(assetName);
-            throw new NotImplementedException();
         }
     }
 }

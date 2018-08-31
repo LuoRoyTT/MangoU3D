@@ -10,6 +10,7 @@ namespace Client.FuncAllocator
 		private static float frameFixedInterval = 0.02f;
 		private float frameInterval = 0f;
 		private List<IFuncRec> waitFuncRecCalls = new List<IFuncRec>();
+		private int index;
 		public void AddFuncRec(IFuncRec func)
 		{
 			int index = waitFuncRecCalls.FindIndex((a)=>{return a.Equals(func);});
@@ -33,14 +34,21 @@ namespace Client.FuncAllocator
 			{
 				return;
 			}
+			index = 0;
 			while (waitFuncRecCalls!=null && waitFuncRecCalls.Count!=0)
 			{
-				IFuncRec func = waitFuncRecCalls[0];
-				waitFuncRecCalls.RemoveAt(0);
-				if(!func.script||!func.script.enabled) continue;
+				IFuncRec func = waitFuncRecCalls[index];
+				if(func.CountDown>0) 
+				{
+					func.CountDown-=Time.deltaTime;
+					index++;
+					continue;
+				}
+				waitFuncRecCalls.RemoveAt(index);
+				if(!func.Script||!func.Script.enabled) continue;
 				func.Dispose();
-				frameInterval += func.Interval;
-				if(func.Interval>frameFixedInterval) break;
+				frameInterval += func.ElapsedTime;
+				if(func.ElapsedTime>frameFixedInterval) break;
 			}
 			frameInterval = 0f;
 		}

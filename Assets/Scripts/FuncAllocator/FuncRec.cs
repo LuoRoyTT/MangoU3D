@@ -7,51 +7,67 @@ namespace Client.FuncAllocator
 {
 	public interface IFuncRec
 	{
-		float Interval{get;}
-		MonoBehaviour script{get;}
+		float ElapsedTime{get;}
+		float CountDown{get;set;}
+		MonoBehaviour Script{get;}
 		void Dispose();
 	}
 
-    public class FuncRec : IFuncRec
+    public struct FuncRec : IFuncRec
     {
-        public float Interval { get; private set; }
-		public MonoBehaviour script{get;private set;}
+		public MonoBehaviour Script{get;private set;}
+        public float ElapsedTime { get; private set;}
+		public float CountDown{get; set;}
+		private float interval;
 		Action action;
 
         public void Dispose()
         {
             float startTimeStamp = Time.realtimeSinceStartup;
 			action();
-			Interval = Time.realtimeSinceStartup - startTimeStamp;
+			ElapsedTime = Time.realtimeSinceStartup - startTimeStamp;
         }
-		public FuncRec(Action action)
+		public FuncRec(MonoBehaviour script,Action action,float interval=0f)
 		{
+			this.Script = script;
 			this.action = action;
+			this.ElapsedTime = 0f;
+			this.CountDown = interval;
+			this.interval = interval;
+
 		}
     }
 
-	public class FuncRec<T> : IFuncRec
+	public struct FuncRec<T> : IFuncRec
     {
-        public float Interval { get; private set; }
-		public MonoBehaviour script{get;private set;}
+		public MonoBehaviour Script{get;private set;}
+        public float ElapsedTime { get; private set;}
+		public float CountDown{get; set;}
+		private float interval;
 		Action<T> action;
         T param1;
         public void Dispose()
         {
             float startTimeStamp = Time.realtimeSinceStartup;
 			action(param1);
-			Interval = Time.realtimeSinceStartup - startTimeStamp;
+			ElapsedTime = Time.realtimeSinceStartup - startTimeStamp;
         }
-		public FuncRec(Action<T> action,T param1)
+		public FuncRec(MonoBehaviour script,Action<T> action,T param1,float interval=0f)
 		{
+			this.Script = script;
 			this.action = action;
 			this.param1 = param1;
+			this.ElapsedTime = 0f;
+			this.CountDown = interval;
+			this.interval = interval;
 		}
     }
-	public class FuncRec<T1,T2> : IFuncRec
+	public struct FuncRec<T1,T2> : IFuncRec
     {
-        public float Interval { get; private set; }
-		public MonoBehaviour script{get;private set;}
+		public MonoBehaviour Script{get;private set;}
+        public float ElapsedTime { get; private set; }
+		public float CountDown{get; set;}
+		private float interval;
 		Action<T1,T2> action;
         T1 param1;
 		T2 param2;
@@ -59,13 +75,18 @@ namespace Client.FuncAllocator
         {
             float startTimeStamp = Time.realtimeSinceStartup;
 			action(param1,param2);
-			Interval = Time.realtimeSinceStartup - startTimeStamp;
+			ElapsedTime = Time.realtimeSinceStartup - startTimeStamp;
         }
-		public FuncRec(Action<T1,T2> action,T1 param1,T2 param2)
+		public FuncRec(MonoBehaviour script,Action<T1,T2> action,T1 param1,T2 param2,float interval=0f)
 		{
 			this.action = action;
+
+			this.Script = script;
 			this.param1 = param1;
 			this.param2 = param2;
+			this.ElapsedTime = 0f;
+			this.CountDown = interval;
+			this.interval = interval;
 		}
     }
 }

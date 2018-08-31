@@ -3,28 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using Client.Core;
 using Client.Data;
+using Client.FuncAllocator;
 using UnityEngine;
 
 namespace Client.ResourceModule
 { 
+	public delegate void CachedCallback(UnityEngine.Object asset);
 	public class ResourceModule : MonoSingleton<ResourceModule> 
 	{
+
 		private Dictionary<string,IAssetLoader> loadersMap;
 		private List<IAssetLoader> waitForReleaseLoaders;
-		private IAssetLoader LoadAssetSyn(string assetName)
+		private float releaseInterval = 10f;
+		private FuncRec releaseLoaderFuncRec;
+		protected override void Init()
 		{
-			return null;
-		}
-        private IAssetLoader LoadAssetAsyn(string assetName)
-		{
-			return null;
+			loadersMap = new Dictionary<string, IAssetLoader>();
+			waitForReleaseLoaders = new List<IAssetLoader>();
+			releaseLoaderFuncRec = new FuncRec(this,ReleaseLoader,releaseInterval);
+			FuncAllocatorCenter.Instance.AddFuncRec(releaseLoaderFuncRec);
 		}
 
-		public T Get<T>(string assetName) where T:IRecyclableObject,IAssetLoader
+		public IAssetLoader Get(string assetName,string classKey)
 		{
 			if(loadersMap.ContainsKey(assetName))
 			{
-				return (T)loadersMap[assetName];
+				return loadersMap[assetName];
 			}
 			else
 			{
@@ -33,33 +37,50 @@ namespace Client.ResourceModule
 				{
 					IAssetLoader loader = waitForReleaseLoaders[index];
 					waitForReleaseLoaders.Remove(loader);
-					return (T)loader;
+					return loader;
 				}
 				else
 				{
-					return CreateLoader<T>(assetName);
+					return CreateLoader(assetName,classKey);
 				}
 			}
 		}
-		private T CreateLoader<T>(string assetName) where T:IRecyclableObject,IAssetLoader
+		public T Get<T>(string assetName) where T:IRecyclableObject,IAssetLoader
 		{
-			T loader = RecyclableObjectPool.Get<T>();
+			T loader = default(T);
+			loader = (T)Get(assetName,loader.ClassKey);
+			return loader;
+		}
+		private IAssetLoader CreateLoader(string assetName,string classKey) 
+		{
+			IAssetLoader loader = RecyclableObjectPool.Get(classKey) as IAssetLoader;
 			loader.Init(assetName);
 			return loader;
 		}
-        public void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader
+		public IAssetLoader Load(string assetName,string classKey,CachedCallback onCacheFinished)
+		{
+			IAssetLoader loader = Get(assetName,classKey);
+			loader.Load(onCacheFinished);
+			return loader;
+		}
+        public T Load<T>(string assetName,CachedCallback onCacheFinished) where T:IRecyclableObject,IAssetLoader
 		{
 			T loader = Get<T>(assetName);
-			loader.Load(assetName,onFinished);
+			loader.Load(onCacheFinished);
+			return loader;
 		}
 		public void Recycle(IAssetLoader loader)
 		{
 			loadersMap.Remove(loader.AssetName);
 			waitForReleaseLoaders.Add(loader);
 		}
-		private void ReleaseLoader()
+		public void ReleaseLoader()
 		{
-
+			if(waitForReleaseLoaders==null || waitForReleaseLoaders.Count==0) return;
+			for (int index = 0; index < waitForReleaseLoaders.Count; index++)
+			{
+				RecyclableObjectPool.Release(waitForReleaseLoaders[index] as IRecyclableObject);
+			}
 		}
 	}
 }

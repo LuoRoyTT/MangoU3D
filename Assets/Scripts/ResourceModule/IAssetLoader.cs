@@ -8,21 +8,20 @@ namespace Client.ResourceModule
 {
 	public enum eLoadStatus
 	{
-		Release,
 		idle,
 		Loading,
 		Loaded,
-		Recycle
+		Release
 	}
 	public interface IAssetLoader
 	{
 		string AssetName{get;}
         UnityEngine.Object Asset {get;}
 		float Progress{get;}
-		bool Compeleted{get;}
+		int RefCount{get;}
 		eLoadStatus Status{get;}
 		void Init(string assetName);
-		void Load<T>(string assetName,Action<T> onFinished) where T:IRecyclableObject,IAssetLoader;
+		void Load(CachedCallback onCacheFinished);
 		void Recycle();
 
 	} 
