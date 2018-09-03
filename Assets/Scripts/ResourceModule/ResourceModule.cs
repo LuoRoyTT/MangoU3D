@@ -57,6 +57,10 @@ namespace Client.ResourceModule
 			loader.Init(assetName);
 			return loader;
 		}
+		public bool Exist(string assetName)
+		{
+			return loadersMap.ContainsKey(assetName);
+		}
 		public IAssetLoader Load(string assetName,string classKey,CachedCallback onCacheFinished)
 		{
 			IAssetLoader loader = Get(assetName,classKey);

@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
+
 namespace Client.ResourceModule
 {
-    public class AssetBundleLoader : IRecyclableObject,IAssetLoader<AssetBundle>
+    public class SpriteLoader : IRecyclableObject,IAssetLoader<Sprite>
     {
-        public static string CLASS_KEY="AssetBundleLoader";
+        public static string CLASS_KEY="SpriteLoader";
         public static readonly int weight = 1;
         public string ClassKey {get{return CLASS_KEY;}}
         public string AssetName {get{return assetName;}}
         private string assetName;
-        public AssetBundle Asset {get{return asset as AssetBundle;}}
+        public Sprite Asset {get{return asset as Sprite;}}
         UnityEngine.Object IAssetLoader.Asset {get{return asset;}}
         private UnityEngine.Object asset;
 
@@ -26,36 +26,39 @@ namespace Client.ResourceModule
         public eLoadStatus Status{get{return status;}}
         private eLoadStatus status;
 
+		private AssetBundleLoader bundleLoader;
+
         public void Init(string assetName)
         {
             this.assetName = assetName;
         }
-        private void LoadedCallbac(CachedCallback onCacheFinished)
+
+        public void Load(CachedCallback onCacheFinished) 
         {
+			status = eLoadStatus.Loading;
+			if(bundleLoader==null)
+			{
+				string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
+				bundleLoader = ResourceModule.Instance.Get<AssetBundleLoader>(bundleName);
+			}
+			bundleLoader.Load((bundle)=>
+			{
+				Load(onCacheFinished);
+			});
+            ResourceModule.Instance.StartCoroutine(LoadAsset(assetName,onCacheFinished));
+        }
+        private IEnumerator LoadAsset(string assetName,CachedCallback onCacheFinished)
+        {
+
+			string path = ResourceSetting.GetAssetPathByAssetName(assetName);
+            //TODO 加载相应的bundle和依赖的bundle
+            yield return null;
+            refCount++;
             status = eLoadStatus.Loaded;
             if(onCacheFinished!=null)
             {
                 onCacheFinished(asset);
             }
-        }
-        public void Load(CachedCallback onCacheFinished) 
-        {
-            status = eLoadStatus.Loading;
-            if(ResourceModule.Instance.Exist(assetName))
-            {
-                LoadedCallbac(onCacheFinished);
-            }
-            else
-            {
-                ResourceModule.Instance.StartCoroutine(LoadAssetBundle(assetName,onCacheFinished));
-            }
-        }
-        private IEnumerator LoadAssetBundle(string path,CachedCallback onCacheFinished)
-        {
-            //TODO 加载相应的bundle和依赖的bundle
-            yield return null;
-            refCount++;
-            LoadedCallbac(onCacheFinished);
         }
         public void Recycle()
         {
@@ -78,4 +81,5 @@ namespace Client.ResourceModule
         }
     }
 }
+
 

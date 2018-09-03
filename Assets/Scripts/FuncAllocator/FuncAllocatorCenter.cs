@@ -10,13 +10,14 @@ namespace Client.FuncAllocator
 		private static float frameFixedInterval = 0.02f;
 		private float frameInterval = 0f;
 		private List<IFuncRec> waitFuncRecCalls = new List<IFuncRec>();
+		private List<IFuncRec> updateFuncRecCalls = new List<IFuncRec>();
 		private int index;
 		public void AddFuncRec(IFuncRec func)
 		{
-			int index = waitFuncRecCalls.FindIndex((a)=>{return a.Equals(func);});
-			if(index!=-1)
+			int findIndex = waitFuncRecCalls.FindIndex((a)=>{return a.Equals(func);});
+			if(findIndex!=-1)
 			{
-				waitFuncRecCalls.RemoveAt(index);
+				waitFuncRecCalls.RemoveAt(findIndex);
 			}
 			waitFuncRecCalls.Add(func);
 		}
@@ -27,6 +28,24 @@ namespace Client.FuncAllocator
 		public void RemoveAll()
 		{
 			waitFuncRecCalls.Clear();
+		}
+		public void AddUpdateFuncRec(IFuncRec func)
+		{
+			int findIndex = updateFuncRecCalls.FindIndex((a)=>{return a.Equals(func);});
+			if(findIndex!=-1)
+			{
+				updateFuncRecCalls.RemoveAt(findIndex);
+			}
+			updateFuncRecCalls.Add(func);
+		}
+
+		public void RemoveUpdateCall(IFuncRec func)
+		{
+			updateFuncRecCalls.Remove(func);
+		}
+		public void RemoveAllUpdateCall()
+		{
+			updateFuncRecCalls.Clear();
 		}
 		void Update()
 		{

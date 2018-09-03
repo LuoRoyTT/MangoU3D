@@ -28,6 +28,5 @@ namespace Client.ResourceModule
 	public interface IAssetLoader<T>:IAssetLoader 
 	{
 		T Asset{get;}
-
 	} 
 }
