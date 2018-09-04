@@ -10,7 +10,7 @@ namespace Client.ResourceModule
 		{
 			return null;
 		}
-		public static string GetAssetPathByAssetName(string assetName)
+		public static string GetBundlePathByBundleName(string bundleName)
 		{
 			return null;
 		}

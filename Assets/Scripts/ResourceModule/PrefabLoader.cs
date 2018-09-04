@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace Client.ResourceModule
 {
-    public class SpriteLoader : IRecyclableObject,IAssetLoader<Sprite>
+    public class PrefabLoader : IRecyclableObject,IAssetLoader<GameObject>
     {
-        public static string CLASS_KEY="SpriteLoader";
+        public static string CLASS_KEY="PrefabLoader";
         public static readonly int weight = 1;
         public string ClassKey {get{return CLASS_KEY;}}
         public string AssetName {get{return assetName;}}
         private string assetName;
-        public Sprite Asset {get{return asset as Sprite;}}
+        public GameObject Asset {get{return asset as GameObject;}}
         UnityEngine.Object IAssetLoader.Asset {get{return asset;}}
         private UnityEngine.Object asset;
 

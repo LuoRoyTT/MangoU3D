@@ -16,6 +16,7 @@ namespace Client.ResourceModule
 		private List<IAssetLoader> waitForReleaseLoaders;
 		private float releaseInterval = 10f;
 		private FuncRec releaseLoaderFuncRec;
+		public AssetBundleManifest Manifest{get;private set;}
 		protected override void Init()
 		{
 			loadersMap = new Dictionary<string, IAssetLoader>();

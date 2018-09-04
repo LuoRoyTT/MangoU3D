@@ -18,19 +18,23 @@ namespace Client.ResourceModule
         private UnityEngine.Object asset;
 
         public float Progress{get{return progress;}}
-        public float progress;
+        private float progress;
 
         public int RefCount{get{return refCount;}}
         private int refCount;
 
         public eLoadStatus Status{get{return status;}}
         private eLoadStatus status;
+        private string path;
+        private string[] dependencies;
 
         public void Init(string assetName)
         {
+            status = eLoadStatus.idle;
             this.assetName = assetName;
+            path = ResourceSetting.GetBundlePathByBundleName(assetName);
         }
-        private void LoadedCallbac(CachedCallback onCacheFinished)
+        private void LoadedCallback(CachedCallback onCacheFinished)
         {
             status = eLoadStatus.Loaded;
             if(onCacheFinished!=null)
@@ -41,33 +45,70 @@ namespace Client.ResourceModule
         public void Load(CachedCallback onCacheFinished) 
         {
             status = eLoadStatus.Loading;
+            refCount++;
             if(ResourceModule.Instance.Exist(assetName))
             {
-                LoadedCallbac(onCacheFinished);
+                LoadedCallback(onCacheFinished);
             }
             else
             {
-                ResourceModule.Instance.StartCoroutine(LoadAssetBundle(assetName,onCacheFinished));
+                ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
-        private IEnumerator LoadAssetBundle(string path,CachedCallback onCacheFinished)
+        private IEnumerator LoadAssetBundle(CachedCallback onCacheFinished)
         {
             //TODO 加载相应的bundle和依赖的bundle
-            yield return null;
-            refCount++;
-            LoadedCallbac(onCacheFinished);
+            dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
+            if(dependencies!=null)
+            {
+                int dependenciesLoadedCount = 0;
+                int dependenciesCount = dependencies.Length;
+                for (int i = 0; i < dependenciesCount; i++)
+                {
+                    ResourceModule.Instance.Load<AssetBundleLoader>(dependencies[i],(asset)=>
+                    {
+                        dependenciesLoadedCount++;
+                    });
+                    // AssetBundleLoader loader = ResourceModule.Instance.Get<AssetBundleLoader>(dependencies[i]);
+                    // loader.Load((asset)=>
+                    // {
+                    //     dependenciesLoadedCount++;
+                    // });
+                }
+                while (dependenciesLoadedCount<dependenciesCount)
+                {
+                    yield return null;
+                }
+            }
+            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
+            yield return request;
+            asset = request.assetBundle;
+            if(!asset)
+            {
+                Debug.LogError("Bundle加载失败!");
+            }
+            LoadedCallback(onCacheFinished);
         }
         public void Recycle()
         {
+            if(status!=eLoadStatus.Loaded)
+            {
+                Debug.LogError("asset尚未完成加载!");
+                return;
+            }
             refCount--;
             if (refCount==0)
             {
                 ResourceModule.Instance.Recycle(this);
             }
+            for (int i = 0; i < dependencies.Length; i++)
+            {
+                ResourceModule.Instance.Get<AssetBundleLoader>(dependencies[i]).Recycle();
+            }
         }
         public void OnUse()
         {
-            status = eLoadStatus.idle;
+
         }
         public void OnRelease()
         {
@@ -75,6 +116,9 @@ namespace Client.ResourceModule
             status = eLoadStatus.Release;
             progress = 0f;
             refCount = 0;
+            dependencies = null;
+            assetName = null;
+            path = null;
         }
     }
 }
