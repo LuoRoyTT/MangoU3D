@@ -6,25 +6,20 @@ using UnityEngine;
 
 namespace Client.ResourceModule
 {
-    public class AssetBundleLoader : IRecyclableObject,IAssetLoader<AssetBundle>
+    public class AssetBundleLoader : IRecyclableObject,IAssetLoader
     {
         public static string CLASS_KEY="AssetBundleLoader";
         public static readonly int weight = 1;
         public string ClassKey {get{return CLASS_KEY;}}
         public string AssetName {get{return assetName;}}
         private string assetName;
-        public AssetBundle Asset {get{return asset as AssetBundle;}}
-        UnityEngine.Object IAssetLoader.Asset {get{return asset;}}
-        private UnityEngine.Object asset;
-
-        public float Progress{get{return progress;}}
-        private float progress;
 
         public int RefCount{get{return refCount;}}
         private int refCount;
 
         public eLoadStatus Status{get{return status;}}
         private eLoadStatus status;
+        private AssetBundle bundle;
         private string path;
         private string[] dependencies;
 
@@ -34,15 +29,58 @@ namespace Client.ResourceModule
             this.assetName = assetName;
             path = ResourceSetting.GetBundlePathByBundleName(assetName);
         }
-        private void LoadedCallback(CachedCallback onCacheFinished)
+        
+        public UnityEngine.Object Load()
         {
-            status = eLoadStatus.Loaded;
-            if(onCacheFinished!=null)
+            status = eLoadStatus.Loading;
+            refCount++;
+            if(ResourceModule.Instance.Exist(assetName))
             {
-                onCacheFinished(asset);
+                return (UnityEngine.Object)bundle;
+            }
+            else
+            {
+                if(dependencies==null||dependencies.Length==0)
+                {
+                    dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
+                }
+                if(dependencies!=null)
+                {
+                    int dependenciesLoadedCount = 0;
+                    int dependenciesCount = dependencies.Length;
+                    for (int i = 0; i < dependenciesCount; i++)
+                    {
+                        ResourceModule.Instance.Load<AssetBundleLoader>(dependencies[i],(asset)=>
+                        {
+                            dependenciesLoadedCount++;
+                        });
+                        // AssetBundleLoader loader = ResourceModule.Instance.Get<AssetBundleLoader>(dependencies[i]);
+                        // loader.Load((asset)=>
+                        // {
+                        //     dependenciesLoadedCount++;
+                        // });
+                    }
+                    while (dependenciesLoadedCount<dependenciesCount)
+                    {
+
+                    }
+                }
+                AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
+                while (request.assetBundle==null)
+                {
+
+                }
+                bundle = request.assetBundle;
+                return bundle;
             }
         }
-        public void Load(CachedCallback onCacheFinished) 
+
+        public T Load<T>() where T : UnityEngine.Object
+        {
+            return Load() as T;
+        }
+
+        public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
             status = eLoadStatus.Loading;
             refCount++;
@@ -55,7 +93,47 @@ namespace Client.ResourceModule
                 ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
-        private IEnumerator LoadAssetBundle(CachedCallback onCacheFinished)
+
+        public IAssetAsynResquest LoadAsyn()
+        {
+            status = eLoadStatus.Loading;
+            refCount++;
+            IAssetAsynResquest asynRequest = null;
+            if(ResourceModule.Instance.Exist(assetName))
+            {
+                asynRequest = new AssetBundleAsynResquest(bundle);
+            }
+            else
+            {
+                ResourceModule.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
+                {
+                    asynRequest = new AssetBundleAsynResquest(bundle);
+                }));
+            }
+            return asynRequest;
+        }
+        private void LoadedCallback<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
+        {
+            status = eLoadStatus.Loaded;
+            if(onCacheFinished!=null)
+            {
+                onCacheFinished(bundle as T);
+            }
+        }
+        // public void Load(CachedCallback onCacheFinished) 
+        // {
+        //     status = eLoadStatus.Loading;
+        //     refCount++;
+        //     if(ResourceModule.Instance.Exist(assetName))
+        //     {
+        //         LoadedCallback(onCacheFinished);
+        //     }
+        //     else
+        //     {
+        //         ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
+        //     }
+        // }
+        private IEnumerator LoadAssetBundle<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
             //TODO 加载相应的bundle和依赖的bundle
             dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
@@ -82,8 +160,8 @@ namespace Client.ResourceModule
             }
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
             yield return request;
-            asset = request.assetBundle;
-            if(!asset)
+            bundle = request.assetBundle;
+            if(!bundle)
             {
                 Debug.LogError("Bundle加载失败!");
             }
@@ -112,14 +190,14 @@ namespace Client.ResourceModule
         }
         public void OnRelease()
         {
-            asset = null;
+            bundle = null;
             status = eLoadStatus.Release;
-            progress = 0f;
             refCount = 0;
             dependencies = null;
             assetName = null;
             path = null;
         }
+
     }
 }
 

@@ -13,20 +13,21 @@ namespace Client.ResourceModule
 		Loaded,
 		Release
 	}
+	public interface IAssetAsynResquest
+	{
+		T GetAsset<T>() where T:UnityEngine.Object; 
+	}
+
 	public interface IAssetLoader
 	{
 		string AssetName{get;}
-        UnityEngine.Object Asset {get;}
-		float Progress{get;}
-		int RefCount{get;}
 		eLoadStatus Status{get;}
+		int RefCount{get;}
 		void Init(string assetName);
-		void Load(CachedCallback onCacheFinished);
+		UnityEngine.Object Load();
+		T Load<T>() where T:UnityEngine.Object; 
+		void LoadAsyn<T>(Action<T> onCacheFinished) where T:UnityEngine.Object;
+		IAssetAsynResquest LoadAsyn();
 		void Recycle();
-
-	} 
-	public interface IAssetLoader<T>:IAssetLoader 
-	{
-		T Asset{get;}
 	} 
 }

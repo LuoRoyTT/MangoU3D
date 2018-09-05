@@ -11,8 +11,8 @@ namespace Client.ResourceModule
 	public class ResourceManager : MonoSingleton<ResourceManager> 
 	{
 
-		private Dictionary<string,IAssetRes> loadersMap;
-		private List<IAssetRes> waitForReleaseLoaders;
+		private Dictionary<string,IAssetLoader> loadersMap;
+		private List<IAssetLoader> waitForReleaseLoaders;
 		private float releaseInterval = 10f;
 		private FuncRec releaseLoaderFuncRec;
 		public AssetBundleManifest Manifest{get;private set;}
@@ -22,7 +22,7 @@ namespace Client.ResourceModule
 			LOAD_TYPE_CLASS_KEY = "AssetBundleRes";
 		}
 
-		public IAssetRes Get(string assetName)
+		public IAssetLoader Get(string assetName)
 		{
 			if(loadersMap.ContainsKey(assetName))
 			{
@@ -33,7 +33,7 @@ namespace Client.ResourceModule
 				int index = waitForReleaseLoaders.FindIndex((a)=>{return a.AssetName.Equals(assetName);});
 				if(index!=-1)
 				{
-					IAssetRes loader = waitForReleaseLoaders[index];
+					IAssetLoader loader = waitForReleaseLoaders[index];
 					waitForReleaseLoaders.Remove(loader);
 					return loader;
 				}
@@ -44,9 +44,9 @@ namespace Client.ResourceModule
 			}
 		}
 
-		private IAssetRes CreateLoader(string assetName) 
+		private IAssetLoader CreateLoader(string assetName) 
 		{
-			IAssetRes loader = RecyclableObjectPool.Get(LOAD_TYPE_CLASS_KEY) as IAssetRes;
+			IAssetLoader loader = RecyclableObjectPool.Get(LOAD_TYPE_CLASS_KEY) as IAssetLoader;
 			loader.Init(assetName);
 			return loader;
 		}
