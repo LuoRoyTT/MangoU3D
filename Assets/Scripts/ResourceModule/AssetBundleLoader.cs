@@ -34,7 +34,7 @@ namespace Client.ResourceModule
         {
             status = eLoadStatus.Loading;
             refCount++;
-            if(ResourceModule.Instance.Exist(assetName))
+            if(ResourceManager.Instance.Exist(assetName))
             {
                 return (UnityEngine.Object)bundle;
             }
@@ -42,27 +42,14 @@ namespace Client.ResourceModule
             {
                 if(dependencies==null||dependencies.Length==0)
                 {
-                    dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
+                    dependencies = ResourceManager.Instance.Manifest.GetAllDependencies(assetName);
                 }
                 if(dependencies!=null)
                 {
-                    int dependenciesLoadedCount = 0;
-                    int dependenciesCount = dependencies.Length;
-                    for (int i = 0; i < dependenciesCount; i++)
+                    for (int i = 0; i < dependencies.Length; i++)
                     {
-                        ResourceModule.Instance.Load<AssetBundleLoader>(dependencies[i],(asset)=>
-                        {
-                            dependenciesLoadedCount++;
-                        });
-                        // AssetBundleLoader loader = ResourceModule.Instance.Get<AssetBundleLoader>(dependencies[i]);
-                        // loader.Load((asset)=>
-                        // {
-                        //     dependenciesLoadedCount++;
-                        // });
-                    }
-                    while (dependenciesLoadedCount<dependenciesCount)
-                    {
-
+                        IAssetLoader loader = ResourceManager.Instance.Get(dependencies[i]);
+                        loader.Load();
                     }
                 }
                 AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
@@ -84,13 +71,13 @@ namespace Client.ResourceModule
         {
             status = eLoadStatus.Loading;
             refCount++;
-            if(ResourceModule.Instance.Exist(assetName))
+            if(ResourceManager.Instance.Exist(assetName))
             {
                 LoadedCallback(onCacheFinished);
             }
             else
             {
-                ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
+                ResourceManager.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
 
@@ -99,13 +86,13 @@ namespace Client.ResourceModule
             status = eLoadStatus.Loading;
             refCount++;
             IAssetAsynResquest asynRequest = null;
-            if(ResourceModule.Instance.Exist(assetName))
+            if(ResourceManager.Instance.Exist(assetName))
             {
                 asynRequest = new AssetBundleAsynResquest(bundle);
             }
             else
             {
-                ResourceModule.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
+                ResourceManager.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
                 {
                     asynRequest = new AssetBundleAsynResquest(bundle);
                 }));
@@ -120,23 +107,13 @@ namespace Client.ResourceModule
                 onCacheFinished(bundle as T);
             }
         }
-        // public void Load(CachedCallback onCacheFinished) 
-        // {
-        //     status = eLoadStatus.Loading;
-        //     refCount++;
-        //     if(ResourceModule.Instance.Exist(assetName))
-        //     {
-        //         LoadedCallback(onCacheFinished);
-        //     }
-        //     else
-        //     {
-        //         ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
-        //     }
-        // }
+
         private IEnumerator LoadAssetBundle<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
-            //TODO 加载相应的bundle和依赖的bundle
-            dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
+            if(dependencies==null||dependencies.Length==0)
+            {
+                dependencies = ResourceManager.Instance.Manifest.GetAllDependencies(assetName);
+            }
             if(dependencies!=null)
             {
                 int dependenciesLoadedCount = 0;
@@ -147,11 +124,6 @@ namespace Client.ResourceModule
                     {
                         dependenciesLoadedCount++;
                     });
-                    // AssetBundleLoader loader = ResourceModule.Instance.Get<AssetBundleLoader>(dependencies[i]);
-                    // loader.Load((asset)=>
-                    // {
-                    //     dependenciesLoadedCount++;
-                    // });
                 }
                 while (dependenciesLoadedCount<dependenciesCount)
                 {
@@ -177,11 +149,11 @@ namespace Client.ResourceModule
             refCount--;
             if (refCount==0)
             {
-                ResourceModule.Instance.Recycle(this);
+                ResourceManager.Instance.Recycle(this);
             }
             for (int i = 0; i < dependencies.Length; i++)
             {
-                ResourceModule.Instance.Get<AssetBundleLoader>(dependencies[i]).Recycle();
+                ResourceManager.Instance.Get(dependencies[i]).Recycle();
             }
         }
         public void OnUse()

@@ -54,6 +54,19 @@ namespace Client.ResourceModule
 		{
 			return loadersMap.ContainsKey(assetName);
 		}
+		public void Recycle(IAssetLoader loader)
+		{
+			loadersMap.Remove(loader.AssetName);
+			waitForReleaseLoaders.Add(loader);
+		}
+		public void ReleaseLoader()
+		{
+			if(waitForReleaseLoaders==null || waitForReleaseLoaders.Count==0) return;
+			for (int index = 0; index < waitForReleaseLoaders.Count; index++)
+			{
+				RecyclableObjectPool.Release(waitForReleaseLoaders[index] as IRecyclableObject);
+			}
+		}
 	}
 }
 
