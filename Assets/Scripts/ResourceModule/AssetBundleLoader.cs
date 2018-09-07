@@ -29,11 +29,14 @@ namespace Client.ResourceModule
             this.assetName = assetName;
             path = ResourceSetting.GetBundlePathByBundleName(assetName);
         }
-        
-        public UnityEngine.Object Load()
+        private void BeforeLoad()
         {
             status = eLoadStatus.Loading;
             refCount++;
+        }
+        public UnityEngine.Object Load()
+        {
+            BeforeLoad();
             if(ResourceManager.Instance.Exist(assetName))
             {
                 return (UnityEngine.Object)bundle;
@@ -69,8 +72,7 @@ namespace Client.ResourceModule
 
         public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
-            status = eLoadStatus.Loading;
-            refCount++;
+            BeforeLoad();
             if(ResourceManager.Instance.Exist(assetName))
             {
                 LoadedCallback(onCacheFinished);
@@ -81,20 +83,19 @@ namespace Client.ResourceModule
             }
         }
 
-        public IAssetAsynResquest LoadAsyn()
+        public IAssetAsynRequest LoadAsyn<T>() where T: UnityEngine.Object
         {
-            status = eLoadStatus.Loading;
-            refCount++;
-            IAssetAsynResquest asynRequest = null;
+            BeforeLoad();
+            IAssetAsynRequest asynRequest = new AssetBundleAsynRequest();
             if(ResourceManager.Instance.Exist(assetName))
             {
-                asynRequest = new AssetBundleAsynResquest(bundle);
+                asynRequest.SetAsset(bundle);
             }
             else
             {
                 ResourceManager.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
                 {
-                    asynRequest = new AssetBundleAsynResquest(bundle);
+                    asynRequest.SetAsset(bundle);
                 }));
             }
             return asynRequest;
@@ -120,7 +121,8 @@ namespace Client.ResourceModule
                 int dependenciesCount = dependencies.Length;
                 for (int i = 0; i < dependenciesCount; i++)
                 {
-                    ResourceModule.Instance.Load<AssetBundleLoader>(dependencies[i],(asset)=>
+                    AssetBundleLoader loader = ResourceManager.Instance.Get(dependencies[i]) as AssetBundleLoader;
+                    loader.LoadAsyn<AssetBundle>((bundle)=>
                     {
                         dependenciesLoadedCount++;
                     });
@@ -146,6 +148,7 @@ namespace Client.ResourceModule
                 Debug.LogError("asset尚未完成加载!");
                 return;
             }
+             bundle.GetAllAssetNames();
             refCount--;
             if (refCount==0)
             {

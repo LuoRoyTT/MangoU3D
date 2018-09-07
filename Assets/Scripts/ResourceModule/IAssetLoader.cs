@@ -13,10 +13,6 @@ namespace Client.ResourceModule
 		Loaded,
 		Release
 	}
-	public interface IAssetAsynResquest
-	{
-		T GetAsset<T>() where T:UnityEngine.Object; 
-	}
 
 	public interface IAssetLoader
 	{
@@ -27,7 +23,7 @@ namespace Client.ResourceModule
 		UnityEngine.Object Load();
 		T Load<T>() where T:UnityEngine.Object; 
 		void LoadAsyn<T>(Action<T> onCacheFinished) where T:UnityEngine.Object;
-		IAssetAsynResquest LoadAsyn();
+		IAssetAsynRequest LoadAsyn<T>() where T:UnityEngine.Object;
 		void Recycle();
 	} 
 }
