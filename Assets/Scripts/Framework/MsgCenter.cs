@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Client.Event;
-using Client.Core;
+using Mango.Framework.Core;
 using Client.Data;
 using System;
 

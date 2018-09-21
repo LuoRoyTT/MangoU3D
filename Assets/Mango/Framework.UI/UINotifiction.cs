@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Client.UI
+namespace Mango.Framework.UI
 {
     public class UINotifiction
     {

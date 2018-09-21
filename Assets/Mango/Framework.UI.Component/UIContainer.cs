@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Client.UI
+namespace Mango.Framework.UI.Component
 {
 	public class UIContainer : UIComponent 
 	{

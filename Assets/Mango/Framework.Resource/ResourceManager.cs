@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Client.Core;
+using Mango.Framework.Core;
 using Client.Data;
 using Client.FuncAllocator;
 using UnityEngine;

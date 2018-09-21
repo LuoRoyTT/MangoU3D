@@ -2,19 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Client.Core;
+using Mango.Framework.Core;
+using Mango.Framework.UI.Component;
 using UnityEngine;
 
-namespace Client.UI
+namespace Mango.Framework.UI
 {
 	public class ViewBase : UIContainer 
 	{
-		private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
-		private Dictionary<int,Action<UINotifiction>> UINotifictionMaps = new Dictionary<int,Action<UINotifiction>>();
-		private ModuleBase module;
+		private	Dictionary<string, List<MethodInfo>> methodInfoMap;
+		private List<SubViewBase> subViews;
+		private Dictionary<int,Action<UINotifiction>> UINotifictionMaps;
 		private BindableProperty bindableViewModel;
 
-        public ViewModelBase Model 
+        public virtual ViewModelBase Model 
 		{
 			get
 			{
@@ -36,15 +37,6 @@ namespace Client.UI
 
 		private void OnViewValueChanged(object oldModel,object newModel)
 		{
-			//methodInfoMap.InvokeMethod(this,"OnBindValue");
-			if(oldModel!=null)
-			{
-				(oldModel as ViewModelBase).RemoveView(this);
-			}
-			if(newModel!=null)
-			{
-				(newModel as ViewModelBase).AddView(this);
-			}
 			
 		}
 		protected void SendCommand(int commandID,UICommad command)
@@ -66,6 +58,16 @@ namespace Client.UI
             {
                 Debug.LogError("");
             }
+		}
+
+		public void OpenView(string viewName)
+		{
+
+		}
+
+		public void HideView(string viewName)
+		{
+
 		}
 	}
 }

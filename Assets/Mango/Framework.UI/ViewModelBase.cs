@@ -3,25 +3,22 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
-using Client.Core;
+using Mango.Framework.Core;
 using System;
 using Client.Event;
 using Client.Data;
 using Client.Framework;
 
-namespace Client.UI
+namespace Mango.Framework.UI
 {
 	public class ViewModelBase:IProcessEvent
 	{
         private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
-        private ModuleBase module;
-        private List<ViewBase> views=new List<ViewBase>();
-
         private Dictionary<int,Action<UICommad>> UICommandMaps = new Dictionary<int,Action<UICommad>>();
+        private ViewBase mainView;
 
-        public ViewModelBase(ModuleBase module)
+        public ViewModelBase()
         {
-            this.module = module;
             methodInfoMap.InitMethods(this.GetType());
 			methodInfoMap.InvokeMethod(this,"initialize");
             OnCreate();
@@ -30,19 +27,6 @@ namespace Client.UI
 		{
 
 		}
-        public void AddView(ViewBase view)
-        {
-            if(views.Contains(view)) return;
-            views.Add(view);
-        }
-
-        public void RemoveView(ViewBase view)
-        {
-            if(views.Contains(view))
-            {
-                views.Remove(view);
-            }
-        }
         public void ReceiveCommand(int commandID,UICommad command)
         {
             if(UICommandMaps.ContainsKey(commandID))
@@ -60,10 +44,7 @@ namespace Client.UI
         }
         public void SendNotifiction(int notifictionID,UINotifiction notifiction)
         {
-            for (int i = 0; i < views.Count; i++)
-            {
-                views[i].OnNotifiction(notifictionID,notifiction);
-            }
+            mainView.OnNotifiction(notifictionID,notifiction);
         }
         protected void AddUIEventListener(int commandID,Action<UICommad> command)
         {
