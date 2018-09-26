@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Mango.Framework.Core;
 using UnityEngine;
 
-namespace Client.Framework
+namespace Mango.Framework.Resource
 {
 	public class GameObjectPool : MonoSingleton<GameObjectPool> 
 	{

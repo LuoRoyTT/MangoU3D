@@ -6,9 +6,9 @@ using Client.Data;
 using Client.FuncAllocator;
 using UnityEngine;
 
-namespace Client.ResourceModule
+namespace Mango.Framework.Resource
 { 
-	public class ResourceManager : MonoSingleton<ResourceManager> 
+	public class ResourceModule : MonoSingleton<ResourceModule> 
 	{
 
 		private Dictionary<string,IAssetLoader> loadersMap;

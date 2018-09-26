@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Client.ResourceModule
+namespace Mango.Framework.Resource
 {
 	public class ResourceSetting 
 	{

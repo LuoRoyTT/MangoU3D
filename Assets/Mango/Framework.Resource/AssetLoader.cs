@@ -5,7 +5,7 @@ using Client.Data;
 using UnityEngine;
 
 
-namespace Client.ResourceModule
+namespace Mango.Framework.Resource
 {
     public class AssetLoader : IRecyclableObject,IAssetLoader
     {
@@ -33,14 +33,14 @@ namespace Client.ResourceModule
         {
 			status = eLoadStatus.Loading;
             refCount++;
-			if(ResourceManager.Instance.Exist(assetName))
+			if(ResourceModule.Instance.Exist(assetName))
 			{
 				return asset;
 			}
 			if(bundleLoader==null)
 			{
 				string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
-				bundleLoader = ResourceManager.Instance.Get(bundleName) as AssetBundleLoader;
+				bundleLoader = ResourceModule.Instance.Get(bundleName) as AssetBundleLoader;
 			}
 			AssetBundle bundle = bundleLoader.Load() as AssetBundle;
 			asset = bundle.LoadAsset(assetName);
@@ -51,33 +51,12 @@ namespace Client.ResourceModule
         {
 			return Load() as T;
         }
-
-        public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
-        {
-			status = eLoadStatus.Loading;
-            refCount++;
-			if(ResourceManager.Instance.Exist(assetName))
-			{
-				onCacheFinished(asset as T);
-				return;
-			}
-			if(bundleLoader==null)
-			{
-				string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
-				bundleLoader = ResourceManager.Instance.Get(bundleName) as AssetBundleLoader;
-			}
-			bundleLoader.LoadAsyn<AssetBundle>((bundle)=>
-			{
-                ResourceManager.Instance.StartCoroutine(LoadAsset(assetName,bundle,onCacheFinished));
-			});
-        }
-
-        public IAssetAsynRequest LoadAsyn<T>() where T:UnityEngine.Object
+        public IAssetAsynRequest LoadAsyn()
         {
 			status = eLoadStatus.Loading;
             refCount++;
 			IAssetAsynRequest asynRequest = new AssetAsynRequest();
-			if(ResourceManager.Instance.Exist(assetName))
+			if(ResourceModule.Instance.Exist(assetName))
 			{
 				asynRequest.SetAsset(asset);
 			}
@@ -86,11 +65,11 @@ namespace Client.ResourceModule
 				if(bundleLoader==null)
 				{
 					string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
-					bundleLoader = ResourceManager.Instance.Get(bundleName) as AssetBundleLoader;
+					bundleLoader = ResourceModule.Instance.Get(bundleName) as AssetBundleLoader;
 				}
 				bundleLoader.LoadAsyn<AssetBundle>((bundle)=>
 				{
-					ResourceManager.Instance.StartCoroutine(LoadAsset<T>(assetName,bundle,(asset)=>
+					ResourceModule.Instance.StartCoroutine(LoadAsset(assetName,bundle,(asset)=>
 					{
 						asynRequest.SetAsset(asset);
 					}));
@@ -98,7 +77,7 @@ namespace Client.ResourceModule
 			}
             return asynRequest;
         }
-		private IEnumerator LoadAsset<T>(string assetName,AssetBundle bundle,Action<T> onCacheFinished) where T:UnityEngine.Object
+		private IEnumerator LoadAsset(string assetName,AssetBundle bundle,Action<UnityEngine.Object> onCacheFinished)
         {
             AssetBundleRequest request = bundle.LoadAssetAsync(assetName);
             //TODO 加载相应的资源
@@ -107,9 +86,36 @@ namespace Client.ResourceModule
             status = eLoadStatus.Loaded;
             if(onCacheFinished!=null)
             {
-                onCacheFinished(asset as T);
+                onCacheFinished(asset);
             }
         }
+        public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
+        {
+            ResourceModule.Instance.StartCoroutine(LoadAsset<T>(assetName,onCacheFinished));
+			// status = eLoadStatus.Loading;
+            // refCount++;
+			// if(ResourceModule.Instance.Exist(assetName))
+			// {
+			// 	onCacheFinished(asset as T);
+			// 	return;
+			// }
+			// if(bundleLoader==null)
+			// {
+			// 	string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
+			// 	bundleLoader = ResourceModule.Instance.Get(bundleName) as AssetBundleLoader;
+			// }
+			// bundleLoader.LoadAsyn<AssetBundle>((bundle)=>
+			// {
+            //     ResourceModule.Instance.StartCoroutine(LoadAsset(assetName,bundle,onCacheFinished));
+			// });
+        }
+        private IEnumerator LoadAsset<T>(string assetName,Action<T> onCacheFinished) where T : UnityEngine.Object
+        {
+            IAssetAsynRequest request = LoadAsyn();
+            yield return request;
+            onCacheFinished(request.GetAsset<T>());
+        }
+
         public void Recycle()
         {
             if(status!=eLoadStatus.Loaded)
@@ -120,7 +126,7 @@ namespace Client.ResourceModule
             refCount--;
             if (refCount==0)
             {
-                ResourceManager.Instance.Recycle(this);
+                ResourceModule.Instance.Recycle(this);
             }
             bundleLoader.Recycle();
         }

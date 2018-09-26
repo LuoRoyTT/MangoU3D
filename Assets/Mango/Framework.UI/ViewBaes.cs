@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Mango.Framework.Core;
+using Mango.Framework.Resource;
 using Mango.Framework.UI.Component;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Mango.Framework.UI
 {
 	public class ViewBase : UIContainer 
 	{
-		private	Dictionary<string, List<MethodInfo>> methodInfoMap;
+		// private	Dictionary<string, List<MethodInfo>> methodInfoMap;
 		private List<SubViewBase> subViews;
 		private Dictionary<int,Action<UINotifiction>> UINotifictionMaps;
 		private BindableProperty bindableViewModel;
@@ -32,7 +33,7 @@ namespace Mango.Framework.UI
 		protected override void OnCreate()
 		{
 			base.OnCreate();
-			methodInfoMap.InitMethods(this.GetType());	
+			// methodInfoMap.InitMethods(this.GetType());	
 		}
 
 		private void OnViewValueChanged(object oldModel,object newModel)
@@ -58,16 +59,6 @@ namespace Mango.Framework.UI
             {
                 Debug.LogError("");
             }
-		}
-
-		public void OpenView(string viewName)
-		{
-
-		}
-
-		public void HideView(string viewName)
-		{
-
 		}
 	}
 }

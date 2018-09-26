@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.ResourceModule
+namespace Mango.Framework.Resource
 {
     public class AssetAsynRequest : IAssetAsynRequest
     {

@@ -13,14 +13,14 @@ namespace Mango.Framework.UI
 {
 	public class ViewModelBase:IProcessEvent
 	{
-        private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
+        // private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
         private Dictionary<int,Action<UICommad>> UICommandMaps = new Dictionary<int,Action<UICommad>>();
         private ViewBase mainView;
 
         public ViewModelBase()
         {
-            methodInfoMap.InitMethods(this.GetType());
-			methodInfoMap.InvokeMethod(this,"initialize");
+            // methodInfoMap.InitMethods(this.GetType());
+			// methodInfoMap.InvokeMethod(this,"initialize");
             OnCreate();
         }
 		protected virtual void OnCreate()

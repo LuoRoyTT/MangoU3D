@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.ResourceModule
+namespace Mango.Framework.Resource
 {
 	public enum eLoadStatus
 	{
@@ -23,7 +23,7 @@ namespace Client.ResourceModule
 		UnityEngine.Object Load();
 		T Load<T>() where T:UnityEngine.Object; 
 		void LoadAsyn<T>(Action<T> onCacheFinished) where T:UnityEngine.Object;
-		IAssetAsynRequest LoadAsyn<T>() where T:UnityEngine.Object;
+		IAssetAsynRequest LoadAsyn();
 		void Recycle();
 	} 
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.ResourceModule
+namespace Mango.Framework.Resource
 {
     public class AssetBundleLoader : IRecyclableObject,IAssetLoader
     {
@@ -37,7 +37,7 @@ namespace Client.ResourceModule
         public UnityEngine.Object Load()
         {
             BeforeLoad();
-            if(ResourceManager.Instance.Exist(assetName))
+            if(ResourceModule.Instance.Exist(assetName))
             {
                 return (UnityEngine.Object)bundle;
             }
@@ -45,13 +45,13 @@ namespace Client.ResourceModule
             {
                 if(dependencies==null||dependencies.Length==0)
                 {
-                    dependencies = ResourceManager.Instance.Manifest.GetAllDependencies(assetName);
+                    dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
                 }
                 if(dependencies!=null)
                 {
                     for (int i = 0; i < dependencies.Length; i++)
                     {
-                        IAssetLoader loader = ResourceManager.Instance.Get(dependencies[i]);
+                        IAssetLoader loader = ResourceModule.Instance.Get(dependencies[i]);
                         loader.Load();
                     }
                 }
@@ -73,27 +73,27 @@ namespace Client.ResourceModule
         public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
             BeforeLoad();
-            if(ResourceManager.Instance.Exist(assetName))
+            if(ResourceModule.Instance.Exist(assetName))
             {
                 LoadedCallback(onCacheFinished);
             }
             else
             {
-                ResourceManager.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
+                ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
 
-        public IAssetAsynRequest LoadAsyn<T>() where T: UnityEngine.Object
+        public IAssetAsynRequest LoadAsyn()
         {
             BeforeLoad();
             IAssetAsynRequest asynRequest = new AssetBundleAsynRequest();
-            if(ResourceManager.Instance.Exist(assetName))
+            if(ResourceModule.Instance.Exist(assetName))
             {
                 asynRequest.SetAsset(bundle);
             }
             else
             {
-                ResourceManager.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
+                ResourceModule.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
                 {
                     asynRequest.SetAsset(bundle);
                 }));
@@ -113,7 +113,7 @@ namespace Client.ResourceModule
         {
             if(dependencies==null||dependencies.Length==0)
             {
-                dependencies = ResourceManager.Instance.Manifest.GetAllDependencies(assetName);
+                dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
             }
             if(dependencies!=null)
             {
@@ -121,7 +121,7 @@ namespace Client.ResourceModule
                 int dependenciesCount = dependencies.Length;
                 for (int i = 0; i < dependenciesCount; i++)
                 {
-                    AssetBundleLoader loader = ResourceManager.Instance.Get(dependencies[i]) as AssetBundleLoader;
+                    AssetBundleLoader loader = ResourceModule.Instance.Get(dependencies[i]) as AssetBundleLoader;
                     loader.LoadAsyn<AssetBundle>((bundle)=>
                     {
                         dependenciesLoadedCount++;
@@ -152,11 +152,11 @@ namespace Client.ResourceModule
             refCount--;
             if (refCount==0)
             {
-                ResourceManager.Instance.Recycle(this);
+                ResourceModule.Instance.Recycle(this);
             }
             for (int i = 0; i < dependencies.Length; i++)
             {
-                ResourceManager.Instance.Get(dependencies[i]).Recycle();
+                ResourceModule.Instance.Get(dependencies[i]).Recycle();
             }
         }
         public void OnUse()
