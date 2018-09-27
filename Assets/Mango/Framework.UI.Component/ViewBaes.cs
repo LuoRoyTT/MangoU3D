@@ -7,39 +7,15 @@ using Mango.Framework.Resource;
 using Mango.Framework.UI.Component;
 using UnityEngine;
 
-namespace Mango.Framework.UI
+namespace Mango.Framework.UI.Component
 {
 	public class ViewBase : UIContainer 
 	{
 		// private	Dictionary<string, List<MethodInfo>> methodInfoMap;
-		private List<SubViewBase> subViews;
+		// private List<SubViewBase> subViews;
 		private Dictionary<int,Action<UINotifiction>> UINotifictionMaps;
-		private BindableProperty bindableViewModel;
+		public ViewModelBase Model{get;set;}
 
-        public virtual ViewModelBase Model 
-		{
-			get
-			{
-				return bindableViewModel.Value as ViewModelBase ;
-			}
-			set
-			{
-				bindableViewModel.AddListener(OnViewValueChanged);
-				bindableViewModel.Value = value;
-			}
-		}
-
-
-		protected override void OnCreate()
-		{
-			base.OnCreate();
-			// methodInfoMap.InitMethods(this.GetType());	
-		}
-
-		private void OnViewValueChanged(object oldModel,object newModel)
-		{
-			
-		}
 		protected void SendCommand(int commandID,UICommad command)
 		{
 			Model.ReceiveCommand(commandID,command);
@@ -59,6 +35,33 @@ namespace Mango.Framework.UI
             {
                 Debug.LogError("");
             }
+		}
+		public override void Appear()
+		{
+			base.Appear();
+			OnAppear();
+		}
+
+		public override void Hide()
+		{
+			base.Hide();
+			OnHide();
+		}
+		protected virtual void OnCreate()
+		{
+
+		}
+		protected virtual void OnAppear()
+		{
+
+		}
+		protected virtual void OnHide()
+		{
+			
+		}
+		protected virtual void OnClose()
+		{
+
 		}
 	}
 }

@@ -5,7 +5,7 @@ using Client.Data;
 using UnityEngine;
 
 
-namespace Client.Async
+namespace Mango.Framework.Async
 {
     public enum eAsyncQueueState
     {

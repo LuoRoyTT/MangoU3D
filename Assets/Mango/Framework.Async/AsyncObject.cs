@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Client.Async;
+using Client.Data;
 using UnityEngine;
 
-namespace Client.Data
+namespace Mango.Framework.Async
 {
 	public abstract class AsyncObject:IRecyclableObject 
 	{

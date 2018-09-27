@@ -5,7 +5,7 @@ using System.Threading;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.Async
+namespace Mango.Framework.Async
 {
     public delegate void AsyncThreadDelegateFull(object param, Action next);
     public class ThreadAsyncObject : AsyncObject,IRecyclableObject

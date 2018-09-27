@@ -6,7 +6,7 @@ using Mango.Framework.Core;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.Async
+namespace Mango.Framework.Async
 {
 	public class AsyncCenter : MonoSingleton<AsyncCenter>  
 	{

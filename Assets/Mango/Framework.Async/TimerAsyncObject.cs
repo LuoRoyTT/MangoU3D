@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.Async
+namespace Mango.Framework.Async
 {
-    public class FrameAsyncObject : AsyncObject,IRecyclableObject
+    public class TimerAsyncObject : AsyncObject,IRecyclableObject
     {
-        private int frameCount = 0;
-        public static string CLASS_KEY = "FrameAsyncObject";
+        private float interval = 0f;
+        public static string CLASS_KEY = "TimerAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         public override void OnUse()
         {
 
         }
-        public FrameAsyncObject SetInterval(int frameCount)
+        public TimerAsyncObject SetInterval(float interval)
         {
-            this.frameCount = frameCount;
+            this.interval = interval;
             return this;
         }
         public override void OnRelease()
         {
-            frameCount = 0;
+            interval = 0f;
             Next = null;
             onComplete = null;
         }
@@ -32,13 +32,7 @@ namespace Client.Async
         }
         private IEnumerator Timer()
         {
-            int frameStamp = 0;
-            while (frameStamp<frameCount)
-            {
-                frameCount++;
-                yield return null;
-            }
-            
+            yield return new WaitForSeconds(interval);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,47 +8,96 @@ namespace Mango.Framework.UI.Component
 	public class UIContainer : UIComponent 
 	{
 		private Dictionary<string,UIComponent> componentDic = new Dictionary<string,UIComponent>();
-		protected override void OnCreate()
+		private int childCount; 
+		private int initializedCount;
+		void Awake()
 		{
-			// methodInfoMap.InitMethods(this.GetType());
 			UIComponent[] components = GetComponentsInChildren<UIComponent>(true);
+			childCount = 0;
+			initializedCount = 0;
 			if(components!=null)
 			{
 				for (int i = 0; i < components.Length; i++)
 				{
-					AddUIComponentToDic(components[i]);
+					var cmp = components[i];
+					cmp.Initialize(this);
+					if(!cmp.Equals(this))
+					{
+						componentDic.Add(cmp.Name,cmp);
+						childCount++;
+					}
 				}
 			}
+			OnCreate();
 		}
 
-		public void AddUIComponentToDic(UIComponent component)
+		void Start()
 		{
-			if(!componentDic.ContainsKey(component.Name))
+			foreach (var cmp in componentDic.Values)
 			{
-				componentDic.Add(component.Name,component);
-			}
-			else
-			{
-				Debug.LogError("存在同名的Component:"+component.Name);
+				cmp.Initialize(this);
 			}
 		}
-
-		public void RemoveUIComponentFromDic(string cmpName)
+		protected bool visiable;
+		public bool Visiable
 		{
-			if(componentDic.ContainsKey(cmpName))
+			get
 			{
-				componentDic.Remove(cmpName);
-			}
-			else
-			{
-				Debug.LogError("不存在Component:"+cmpName);
+				return visiable;
 			}
 		}
 
-		public void RemoveUIComponentFromDic(UIComponent cmp)
+        public void ReceiveInitializedMsg()
+        {
+            initializedCount++;
+			if(initializedCount>=childCount)
+			{
+				Initialize(this);
+				Appear();
+			}
+        }
+		public override void Appear()
 		{
-			string cmpName=cmp.Name;
-			RemoveUIComponentFromDic(cmpName);
+			foreach (var cmp in componentDic.Values)
+			{
+				cmp.Appear();
+			}
+			visiable = true;
+			OnAppear();
 		}
-	}
+
+		public override void Hide()
+		{
+			foreach (var cmp in componentDic.Values)
+			{
+				cmp.Hide();
+			}
+			visiable = false;
+			OnHide();
+		}
+		protected override void Prepare(Action onFinished)
+		{
+			if(onFinished!=null)
+			{
+				onFinished();
+			}
+		}
+
+		protected virtual void OnCreate()
+		{
+
+		}
+		protected virtual void OnAppear()
+		{
+
+		}
+		protected virtual void OnHide()
+		{
+			
+		}
+		protected virtual void OnClose()
+		{
+
+		}
+    }
 }

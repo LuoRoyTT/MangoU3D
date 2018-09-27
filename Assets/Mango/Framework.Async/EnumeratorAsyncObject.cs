@@ -3,36 +3,33 @@ using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.Async
+namespace Mango.Framework.Async
 {
-    public class TimerAsyncObject : AsyncObject,IRecyclableObject
+    public class EnumeratorAsyncObject : AsyncObject,IRecyclableObject
     {
-        private float interval = 0f;
-        public static string CLASS_KEY = "TimerAsyncObject";
+        private IEnumerator enumerator;
+        public static string CLASS_KEY = "EnumeratorAsyncObject";
         public override string ClassKey{get{return CLASS_KEY;}}
         public override void OnUse()
         {
 
         }
-        public TimerAsyncObject SetInterval(float interval)
+        public EnumeratorAsyncObject SetEnumerator(IEnumerator enumerator)
         {
-            this.interval = interval;
+            this.enumerator = enumerator;
             return this;
         }
         public override void OnRelease()
         {
-            interval = 0f;
+            enumerator = null;
             Next = null;
             onComplete = null;
         }
+
         protected override IEnumerator WaitNext()
         {
-            yield return AsyncCenter.Instance.StartCoroutine(Timer());
+            yield return AsyncCenter.Instance.StartCoroutine(enumerator);
             Complete();
-        }
-        private IEnumerator Timer()
-        {
-            yield return new WaitForSeconds(interval);
         }
     }
 }

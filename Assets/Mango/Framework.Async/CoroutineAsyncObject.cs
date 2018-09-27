@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Client.Data;
 using UnityEngine;
 
-namespace Client.Async
+namespace Mango.Framework.Async
 {
     public class CoroutineAsyncObject : AsyncObject,IRecyclableObject
     {
