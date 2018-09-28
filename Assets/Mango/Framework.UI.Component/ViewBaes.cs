@@ -47,21 +47,5 @@ namespace Mango.Framework.UI.Component
 			base.Hide();
 			OnHide();
 		}
-		protected virtual void OnCreate()
-		{
-
-		}
-		protected virtual void OnAppear()
-		{
-
-		}
-		protected virtual void OnHide()
-		{
-			
-		}
-		protected virtual void OnClose()
-		{
-
-		}
 	}
 }

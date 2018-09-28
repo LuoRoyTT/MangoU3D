@@ -38,6 +38,11 @@ namespace Mango.Framework.UI.Component
 				cmp.Initialize(this);
 			}
 		}
+
+		void OnDestroy()
+		{
+			OnClose();
+		}
 		protected bool visiable;
 		public bool Visiable
 		{
@@ -83,6 +88,7 @@ namespace Mango.Framework.UI.Component
 			}
 		}
 
+       
 		protected virtual void OnCreate()
 		{
 
