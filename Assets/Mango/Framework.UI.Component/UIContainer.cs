@@ -88,7 +88,7 @@ namespace Mango.Framework.UI.Component
 		{
 			OnClose();
 		}
-		
+
 		protected virtual void OnCreate()
 		{
 
