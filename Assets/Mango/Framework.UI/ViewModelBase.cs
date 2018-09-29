@@ -18,7 +18,15 @@ namespace Mango.Framework.UI
         // private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
         private Dictionary<int,Action<UICommad>> UICommandMaps = new Dictionary<int,Action<UICommad>>();
         // private ViewBase mainView;
-        public virtual string MainView{get;}
+        public string ModelName{private set;get;}
+        public string MainView
+        {
+            get
+            {
+                return GetType().Name;
+            }
+        }
+        protected virtual string[] Assets{get;}
         private List<ViewBase> views;
 
         public ViewModelBase()
@@ -27,10 +35,45 @@ namespace Mango.Framework.UI
 			// methodInfoMap.InvokeMethod(this,"initialize");
             OnCreate();
         }
-		protected virtual void OnCreate()
+        
+
+        public void Enter(Action callback)
+        {
+            GameObjectPool.Instance.PreloadAsset(ModelName,null,()=>
+            {
+                OnEnter();
+                if(String.IsNullOrEmpty(MainView))
+                {
+                    OpenView(MainView);
+                }
+                if(callback!=null)
+                {
+                    callback();
+                }
+            },Assets);
+        }
+        public void Exit()
+        {
+            OnExit();
+            for (int i = 0; i < views.Count; i++)
+            {
+                GameObjectPool.Instance.Destroy(views[i].gameObject);
+            }
+            GameObjectPool.Instance.ClearGoup(ModelName);
+        }
+        protected virtual void OnCreate()
 		{
 
 		}
+        protected virtual void OnEnter()
+        {
+
+        }
+
+        protected virtual void OnExit()
+        {
+
+        }
         public void ReceiveCommand(int commandID,UICommad command)
         {
             if(UICommandMaps.ContainsKey(commandID))
@@ -109,19 +152,10 @@ namespace Mango.Framework.UI
             }
             else
             {
-                ModelManager.Instance.StartCoroutine(LoadView(viewName));
+                GameObject viewGO = GameObjectPool.Instance.CreateGO(viewName,null,false);
+                view = viewGO.GetComponent<ViewBase>();
+                views.Add(view);
             }
-
-        }
-
-        private IEnumerator LoadView(string viewName)
-        {
-            IAssetLoader loader = ResourceModule.Instance.Get(viewName);
-            IAssetAsynRequest request = loader.LoadAsyn();
-            yield return request;
-            GameObject viewGO = request.GetAsset<GameObject>();
-            ViewBase view = viewGO.GetComponent<ViewBase>();
-            views.Add(view);
         }
         
         private ViewBase GetView(string viewName)
@@ -154,7 +188,7 @@ namespace Mango.Framework.UI
 
         private ViewBase[] GetVisiableViews()
         {
-            return views.FindAll((a)=>{return a.Visiable;}).ToArray();
+            return views.FindAll(a=> a.Visiable).ToArray();
         }
 
         public void HideView(string viewName)

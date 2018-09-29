@@ -35,6 +35,7 @@ namespace Mango.Framework.Resource
 				{
 					IAssetLoader loader = waitForReleaseLoaders[index];
 					waitForReleaseLoaders.Remove(loader);
+					loadersMap.Add(assetName,loader);
 					return loader;
 				}
 				else
@@ -47,6 +48,7 @@ namespace Mango.Framework.Resource
 		private IAssetLoader CreateLoader(string assetName) 
 		{
 			IAssetLoader loader = RecyclableObjectPool.Get(LOAD_TYPE_CLASS_KEY) as IAssetLoader;
+			loadersMap.Add(assetName,loader);
 			loader.Init(assetName);
 			return loader;
 		}

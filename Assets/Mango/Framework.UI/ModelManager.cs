@@ -20,20 +20,16 @@ namespace Mango.Framework.UI
 		public void ChangeModel(string modelName)
 		{
 			ViewModelBase model = GetModel(modelName);
-			model.OpenView(model.MainView);
-			currentModel.HideAllView();
-			currentModel = model;
+			model.Enter(()=>
+			{
+				currentModel.Exit();
+				currentModel = model;
+			});
+
 		}
 		private ViewModelBase GetModel(string modelName)
 		{
 			return new ViewModelBase();
-		}
-		private IEnumerator LoadView(string viewName)
-		{
-			IAssetLoader loader = ResourceModule.Instance.Get(viewName);
-			IAssetAsynRequest request = loader.LoadAsyn();
-			yield return request;
-			GameObject viewGO = request.GetAsset<GameObject>();
 		}
 	}
 }

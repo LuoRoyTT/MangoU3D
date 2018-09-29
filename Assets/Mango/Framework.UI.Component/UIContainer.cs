@@ -10,6 +10,14 @@ namespace Mango.Framework.UI.Component
 		private Dictionary<string,UIComponent> componentDic = new Dictionary<string,UIComponent>();
 		private int childCount; 
 		private int initializedCount;
+		protected bool visiable;
+		public bool Visiable
+		{
+			get
+			{
+				return visiable;
+			}
+		}
 		void Awake()
 		{
 			UIComponent[] components = GetComponentsInChildren<UIComponent>(true);
@@ -36,19 +44,6 @@ namespace Mango.Framework.UI.Component
 			foreach (var cmp in componentDic.Values)
 			{
 				cmp.Initialize(this);
-			}
-		}
-
-		void OnDestroy()
-		{
-			OnClose();
-		}
-		protected bool visiable;
-		public bool Visiable
-		{
-			get
-			{
-				return visiable;
 			}
 		}
 
@@ -80,6 +75,7 @@ namespace Mango.Framework.UI.Component
 			visiable = false;
 			OnHide();
 		}
+
 		protected override void Prepare(Action onFinished)
 		{
 			if(onFinished!=null)
@@ -88,7 +84,11 @@ namespace Mango.Framework.UI.Component
 			}
 		}
 
-       
+		void OnDestroy()
+		{
+			OnClose();
+		}
+		
 		protected virtual void OnCreate()
 		{
 

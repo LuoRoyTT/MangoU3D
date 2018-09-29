@@ -29,15 +29,19 @@ namespace Mango.Framework.Resource
             this.assetName = assetName;
             path = ResourceSetting.GetBundlePathByBundleName(assetName);
         }
-        private void BeforeLoad()
+        private bool CheckLoadStatus()
         {
-            status = eLoadStatus.Loading;
+            if(status == eLoadStatus.Loading)
+                return false;
+			status = eLoadStatus.Loading;
             refCount++;
+            return true;
         }
+
         public UnityEngine.Object Load()
         {
-            BeforeLoad();
-            if(ResourceModule.Instance.Exist(assetName))
+            if(!CheckLoadStatus()) return null;
+            if(bundle)
             {
                 return (UnityEngine.Object)bundle;
             }
@@ -72,8 +76,8 @@ namespace Mango.Framework.Resource
 
         public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
-            BeforeLoad();
-            if(ResourceModule.Instance.Exist(assetName))
+            if(!CheckLoadStatus()) return;
+            if(bundle)
             {
                 LoadedCallback(onCacheFinished);
             }
@@ -85,9 +89,9 @@ namespace Mango.Framework.Resource
 
         public IAssetAsynRequest LoadAsyn()
         {
-            BeforeLoad();
+            if(!CheckLoadStatus()) return null;
             IAssetAsynRequest asynRequest = new AssetBundleAsynRequest();
-            if(ResourceModule.Instance.Exist(assetName))
+            if(bundle)
             {
                 asynRequest.SetAsset(bundle);
             }
