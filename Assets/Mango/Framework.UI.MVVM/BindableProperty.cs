@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Mango.Framework.UI
+namespace Mango.Framework.UI.MVVM
 {
     public delegate void ValueChangeAction(object oldValue,object newValue);
     public class BindableProperty:IEnumerable 

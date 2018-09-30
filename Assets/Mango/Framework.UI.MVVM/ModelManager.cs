@@ -4,7 +4,7 @@ using Mango.Framework.Core;
 using Mango.Framework.Resource;
 using UnityEngine;
 
-namespace Mango.Framework.UI
+namespace Mango.Framework.UI.MVVM
 {
 	public class ModelManager : MonoSingleton<ModelManager> 
 	{

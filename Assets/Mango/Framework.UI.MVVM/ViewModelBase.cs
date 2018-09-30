@@ -13,19 +13,18 @@ using Mango.Framework.Resource;
 
 namespace Mango.Framework.UI
 {
-	public class ViewModelBase:IProcessEvent
+	public class ViewModelBase: Singleton<ViewModelBase>,IProcessEvent
 	{
         // private	Dictionary<string, List<MethodInfo>> methodInfoMap=new Dictionary<string, List<MethodInfo>>();
         private Dictionary<int,Action<UICommad>> UICommandMaps = new Dictionary<int,Action<UICommad>>();
-        // private ViewBase mainView;
-        public string ModelName{private set;get;}
-        public string MainView
+        public string ModelName
         {
             get
             {
                 return GetType().Name;
             }
         }
+        public virtual string MainView {get;}
         private List<ViewBase> views;
         protected virtual string[] Assets{get;}
 
