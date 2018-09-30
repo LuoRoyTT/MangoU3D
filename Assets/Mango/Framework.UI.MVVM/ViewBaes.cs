@@ -7,7 +7,7 @@ using Mango.Framework.Resource;
 using Mango.Framework.UI.Component;
 using UnityEngine;
 
-namespace Mango.Framework.UI.Component
+namespace Mango.Framework.UI.MVVM
 {
 	public class ViewBase : UIContainer 
 	{

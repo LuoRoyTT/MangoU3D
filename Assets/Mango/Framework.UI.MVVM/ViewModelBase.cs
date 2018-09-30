@@ -11,7 +11,7 @@ using Client.Framework;
 using Mango.Framework.UI.Component;
 using Mango.Framework.Resource;
 
-namespace Mango.Framework.UI
+namespace Mango.Framework.UI.MVVM
 {
 	public class ViewModelBase: Singleton<ViewModelBase>,IProcessEvent
 	{
