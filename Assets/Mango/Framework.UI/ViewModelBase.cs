@@ -26,9 +26,13 @@ namespace Mango.Framework.UI
                 return GetType().Name;
             }
         }
-        protected virtual string[] Assets{get;}
         private List<ViewBase> views;
+        protected virtual string[] Assets{get;}
 
+        protected void DynamicAddAssets(Action onFinished,params string[] assets)
+        {
+            GameObjectPool.Instance.PreloadAsset(this.ModelName,null,onFinished,assets);
+        }
         public ViewModelBase()
         {
             // methodInfoMap.InitMethods(this.GetType());
