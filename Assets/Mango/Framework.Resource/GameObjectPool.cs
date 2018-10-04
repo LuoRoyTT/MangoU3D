@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mango.Framework.Core;
+using Mango.Framework.Coroutine;
 using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-	public class GameObjectPool : MonoSingleton<GameObjectPool> 
+	public class GameObjectPool : MonoSingleton<GameObjectPool>,ICoroutine
 	{
 		Dictionary<string,List<string>> assetsMap;
 		Dictionary<string,List<IAssetLoader>> groupMap;
@@ -30,7 +31,7 @@ namespace Mango.Framework.Resource
 				loaders.Add(ResourceModule.Instance.Get(asset));
 			}
 			int index = 0;
-			StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
+			AppendCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
 		}
 		private IEnumerator DoPreloadAsset(string groupName,List<IAssetLoader> loaders,Action onFinished,int index)
 		{
@@ -58,7 +59,7 @@ namespace Mango.Framework.Resource
 			}
 			else
 			{
-				StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
+				AppendCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
 			}
 		}
 		public void ClearGoup(string groupName)
@@ -155,5 +156,20 @@ namespace Mango.Framework.Resource
 		{
 			GameObject.DestroyImmediate(go);
 		}
-	}
+
+        public MCoroutine AppendCoroutine(IEnumerator it)
+        {
+           return MCoroutinManager.Instance.AppendCoroutine(this.GetHashCode(),it);
+        }
+
+        public void RemoveCoroutine(IEnumerator it)
+        {
+            MCoroutinManager.Instance.RemoveCoroutine(this.GetHashCode(),it);
+        }
+
+        public void RemoveAllCoroutine()
+        {
+            MCoroutinManager.Instance.RemoveAllCoroutine(this.GetHashCode());
+        }
+    }
 }

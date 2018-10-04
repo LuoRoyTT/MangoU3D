@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Client.Data;
 using UnityEngine;
 
 namespace Mango.Framework.Resource

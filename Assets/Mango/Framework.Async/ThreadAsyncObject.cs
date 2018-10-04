@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Client.Data;
+using Mango.Framework.Core;
 using UnityEngine;
 
 namespace Mango.Framework.Async

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mango.Framework.Core
+namespace Mango.Framework.Coroutine
 {
-	public interface IUpdatable
+	public interface IYieldBase 
 	{
-		void CustomUpdate();
 
 	}
 }

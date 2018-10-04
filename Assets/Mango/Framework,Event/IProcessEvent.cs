@@ -1,13 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Client.Data;
 using UnityEngine;
 
-namespace Client.Event
+namespace Mango.Framework.Event
 {
     public interface IProcessEvent
     {
-        void ProcessEvent(enEventID eventID,DataBase data);
+        void ProcessEvent(enEventID eventID,IMessage msg);
 		void RegistMsg(enEventID eventID);
 		void UnRegistMsg(enEventID eventID);
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Client.Data
+namespace Mango.Framework.Core
 {
 	public  interface IRecyclableObject
 	{ 

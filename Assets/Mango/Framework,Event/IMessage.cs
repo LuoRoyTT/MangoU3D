@@ -2,14 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Client.Event;
 
-namespace Client.Data
+namespace Mango.Framework.Event
 {
     /// <summary>
     /// 
     /// </summary>
-    public  class DataBase
+    public interface IMessage
     {
 
     }

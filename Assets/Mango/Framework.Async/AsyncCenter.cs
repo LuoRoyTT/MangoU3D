@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Mango.Framework.Core;
-using Client.Data;
 using UnityEngine;
 
 namespace Mango.Framework.Async

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Client.Event
+namespace Mango.Framework.Event
 {
 	public enum enEventID 
 	{

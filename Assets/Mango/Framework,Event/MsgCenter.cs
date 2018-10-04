@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Client.Event;
 using Mango.Framework.Core;
-using Client.Data;
 using System;
 
-namespace Client.Framework
+namespace Mango.Framework.Event
 {
     public class MsgCenter : MonoSingleton<MsgCenter>
     {

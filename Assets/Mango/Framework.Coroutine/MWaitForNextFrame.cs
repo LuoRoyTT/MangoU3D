@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Mango.Framework.Core
+namespace Mango.Framework.Coroutine
 {
-	public class MWaitForSeconds 
+	public class MWaitForNextFrame : IYieldBase
 	{
-
 
 	}
 }

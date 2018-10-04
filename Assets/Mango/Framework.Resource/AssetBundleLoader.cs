@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Client.Data;
+using Mango.Framework.Core;
+using Mango.Framework.Coroutine;
 using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-    public class AssetBundleLoader : IRecyclableObject,IAssetLoader
+    public class AssetBundleLoader : IRecyclableObject,IAssetLoader,ICoroutine
     {
         public static string CLASS_KEY="AssetBundleLoader";
         public static readonly int weight = 1;
@@ -83,7 +84,7 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                ResourceModule.Instance.StartCoroutine(LoadAssetBundle(onCacheFinished));
+                AppendCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
 
@@ -97,7 +98,7 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                ResourceModule.Instance.StartCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
+                AppendCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
                 {
                     asynRequest.SetAsset(bundle);
                 }));
@@ -169,14 +170,29 @@ namespace Mango.Framework.Resource
         }
         public void OnRelease()
         {
-            bundle = null;
             status = eLoadStatus.Release;
+            RemoveAllCoroutine();
             refCount = 0;
+            bundle = null;
             dependencies = null;
             assetName = null;
             path = null;
         }
 
+        public MCoroutine AppendCoroutine(IEnumerator it)
+        {
+            return MCoroutinManager.Instance.AppendCoroutine(this.GetHashCode(),it);
+        }
+
+        public void RemoveCoroutine(IEnumerator it)
+        {
+            MCoroutinManager.Instance.RemoveCoroutine(this.GetHashCode(),it);
+        }
+
+        public void RemoveAllCoroutine()
+        {
+            MCoroutinManager.Instance.RemoveAllCoroutine(this.GetHashCode());
+        }
     }
 }
 

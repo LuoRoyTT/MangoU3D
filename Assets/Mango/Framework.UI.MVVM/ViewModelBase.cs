@@ -5,11 +5,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using Mango.Framework.Core;
 using System;
-using Client.Event;
-using Client.Data;
-using Client.Framework;
 using Mango.Framework.UI.Component;
 using Mango.Framework.Resource;
+using Mango.Framework.Event;
 
 namespace Mango.Framework.UI.MVVM
 {
@@ -131,7 +129,7 @@ namespace Mango.Framework.UI.MVVM
             UICommandMaps.Clear();
         }
 
-        public void ProcessEvent(enEventID eventID, DataBase data)
+        public void ProcessEvent(enEventID eventID, IMessage data)
         {
             throw new NotImplementedException();
         }

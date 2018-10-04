@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Client.Data;
 
-namespace Client.Event
+namespace Mango.Framework.Event
 {
     public class EventNode
     {
