@@ -75,6 +75,7 @@ namespace Mango.Framework.UI.MVVM
         {
 
         }
+        
         public void ReceiveCommand(int commandID,UICommad command)
         {
             if(UICommandMaps.ContainsKey(commandID))
