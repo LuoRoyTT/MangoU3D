@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Mango.Framework.Core;
 using UnityEngine;
 
-namespace Mango.Framework.Network
+namespace Mango.Framework.Task
 {
-    public class NetworkModule : Singleton<NetworkModule>,IGameModule
-    {
+	public class TaskModule :Singleton<TaskModule>,IGameModule
+	{
+		LinkedList<KeyValuePair<int,ITask>> execlusiveTaskList = new LinkedList<KeyValuePair<int, ITask>>();
+
         public int Priority => throw new System.NotImplementedException();
 
         public void Init()
@@ -18,6 +20,11 @@ namespace Mango.Framework.Network
         {
             throw new System.NotImplementedException();
         }
-    }
+
+        void Update()
+		{
+
+		}
+	}
 }
 

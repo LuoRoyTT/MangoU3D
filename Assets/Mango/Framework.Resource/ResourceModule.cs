@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Mango.Framework.Resource
 { 
-	public class ResourceModule : MonoSingleton<ResourceModule> 
+	public class ResourceModule : Singleton<ResourceModule>,IGameModule
 	{
 
 		private Dictionary<string,IAssetLoader> loadersMap;
@@ -15,8 +15,11 @@ namespace Mango.Framework.Resource
 		private float releaseInterval = 10f;
 		private FuncRec releaseLoaderFuncRec;
 		public AssetBundleManifest Manifest{get;private set;}
-		private static string LOAD_TYPE_CLASS_KEY;
-		protected override void Init()
+
+        public int Priority => throw new NotImplementedException();
+
+        private static string LOAD_TYPE_CLASS_KEY;
+		public void Init()
 		{
 			LOAD_TYPE_CLASS_KEY = "AssetBundleRes";
 		}
@@ -68,6 +71,11 @@ namespace Mango.Framework.Resource
 				RecyclableObjectPool.Release(waitForReleaseLoaders[index] as IRecyclableObject);
 			}
 		}
-	}
+
+        public void Release()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
 

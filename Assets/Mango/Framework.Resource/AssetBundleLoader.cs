@@ -50,13 +50,13 @@ namespace Mango.Framework.Resource
             {
                 if(dependencies==null||dependencies.Length==0)
                 {
-                    dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
+                    dependencies = ResourceModule.instance.Manifest.GetAllDependencies(assetName);
                 }
                 if(dependencies!=null)
                 {
                     for (int i = 0; i < dependencies.Length; i++)
                     {
-                        IAssetLoader loader = ResourceModule.Instance.Get(dependencies[i]);
+                        IAssetLoader loader = ResourceModule.instance.Get(dependencies[i]);
                         loader.Load();
                     }
                 }
@@ -118,7 +118,7 @@ namespace Mango.Framework.Resource
         {
             if(dependencies==null||dependencies.Length==0)
             {
-                dependencies = ResourceModule.Instance.Manifest.GetAllDependencies(assetName);
+                dependencies = ResourceModule.instance.Manifest.GetAllDependencies(assetName);
             }
             if(dependencies!=null)
             {
@@ -126,7 +126,7 @@ namespace Mango.Framework.Resource
                 int dependenciesCount = dependencies.Length;
                 for (int i = 0; i < dependenciesCount; i++)
                 {
-                    AssetBundleLoader loader = ResourceModule.Instance.Get(dependencies[i]) as AssetBundleLoader;
+                    AssetBundleLoader loader = ResourceModule.instance.Get(dependencies[i]) as AssetBundleLoader;
                     loader.LoadAsyn<AssetBundle>((bundle)=>
                     {
                         dependenciesLoadedCount++;
@@ -157,11 +157,11 @@ namespace Mango.Framework.Resource
             refCount--;
             if (refCount==0)
             {
-                ResourceModule.Instance.Recycle(this);
+                ResourceModule.instance.Recycle(this);
             }
             for (int i = 0; i < dependencies.Length; i++)
             {
-                ResourceModule.Instance.Get(dependencies[i]).Recycle();
+                ResourceModule.instance.Get(dependencies[i]).Recycle();
             }
         }
         public void OnUse()

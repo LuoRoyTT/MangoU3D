@@ -28,7 +28,7 @@ namespace Mango.Framework.Resource
 			}
 			foreach (string asset in assetsHashSet)
 			{
-				loaders.Add(ResourceModule.Instance.Get(asset));
+				loaders.Add(ResourceModule.instance.Get(asset));
 			}
 			int index = 0;
 			AppendCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));

@@ -48,7 +48,7 @@ namespace Mango.Framework.Resource
 			if(bundleLoader==null)
 			{
 				string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
-				bundleLoader = ResourceModule.Instance.Get(bundleName) as AssetBundleLoader;
+				bundleLoader = ResourceModule.instance.Get(bundleName) as AssetBundleLoader;
 			}
 			AssetBundle bundle = bundleLoader.Load() as AssetBundle;
 			asset = bundle.LoadAsset(assetName);
@@ -73,7 +73,7 @@ namespace Mango.Framework.Resource
 				if(bundleLoader==null)
 				{
 					string bundleName = ResourceSetting.GetBundleNameByAssetName(assetName);
-					bundleLoader = ResourceModule.Instance.Get(bundleName) as AssetBundleLoader;
+					bundleLoader = ResourceModule.instance.Get(bundleName) as AssetBundleLoader;
 				}
 				bundleLoader.LoadAsyn<AssetBundle>((bundle)=>
 				{
@@ -134,7 +134,7 @@ namespace Mango.Framework.Resource
             refCount--;
             if (refCount==0)
             {
-                ResourceModule.Instance.Recycle(this);
+                ResourceModule.instance.Recycle(this);
             }
             bundleLoader.Recycle();
         }

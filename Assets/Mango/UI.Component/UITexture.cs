@@ -7,29 +7,29 @@ using UnityEngine.UI;
 
 namespace Mango.Framework.UI.Component
 {
-	[RequireComponent(typeof(Image))]
-	public class UISprite : UIComponent 
+	[RequireComponent(typeof(RawImage))]
+	public class UITexture : UIComponent 
 	{
-		private Image img;
-		public Image Img
+		private RawImage rwImg;
+		public RawImage RwImg
 		{
 			get
 			{
-				if(img)
+				if(rwImg)
 				{
-					img = GetComponent<Image>();
+					rwImg = GetComponent<RawImage>();
 				}
-				return img;
+				return rwImg;
 			}
 		}
 		[SerializeField]
-		private string spriteName;
+		private string texName;
 		private IAssetLoader loader;
 		protected override void Prepare(Action onFinished)
 		{
-			if(!Img.sprite || spriteName.Equals(Img.sprite.name))
+			if(!rwImg.texture || texName.Equals(rwImg.texture.name))
 			{
-				StartCoroutine(LoadSprite(onFinished));
+				StartCoroutine(LoadTexture(onFinished));
 			}
 			else
 			{
@@ -41,13 +41,13 @@ namespace Mango.Framework.UI.Component
 
 		}
 
-		private IEnumerator LoadSprite(Action onFinished)
+		private IEnumerator LoadTexture(Action onFinished)
 		{
-			IAssetLoader loaderTmp = ResourceModule.Instance.Get(spriteName);
+			IAssetLoader loaderTmp = ResourceModule.instance.Get(texName);
 			IAssetAsynRequest request = loaderTmp.LoadAsyn();
 			yield return request;
-			Sprite sprite = request.GetAsset<Sprite>();
-			img.sprite = sprite;
+			Texture tex = request.GetAsset<Texture>();
+			rwImg.texture = tex;
 			if(loader!=null)
 			{
 				this.loader.Recycle();
@@ -59,12 +59,12 @@ namespace Mango.Framework.UI.Component
 			}
 		}
 		
-		public void SetSpriteByName(string spriteName)
+		public void SetSpriteByName(string texName)
 		{
-			if(!Img.sprite || spriteName.Equals(Img.sprite.name))
+			if(!rwImg.texture || texName.Equals(rwImg.texture.name))
 			{
-				this.spriteName = spriteName;
-				StartCoroutine(LoadSprite(null));
+				this.texName = texName;
+				StartCoroutine(LoadTexture(null));
 			}
 		}
 

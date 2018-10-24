@@ -28,7 +28,7 @@ namespace Mango.Framework.Core
 			{
 				return;
 			}
-			Type typeFromHandle = typeof(RecyclableObjectPool);
+			Type typeFromHandle = typeof(IRecyclableObject);
 			Type[] types = typeFromHandle.Assembly.GetTypes();
 			for (int i = 0; i < types.Length; i++)
 			{
