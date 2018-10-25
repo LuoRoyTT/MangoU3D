@@ -6,7 +6,8 @@ namespace Mango.Framework.Task
 {
 	public interface ITask
 	{
-		eTaskStatus status{get;set;}
+		eTaskStatus status{get;}
+		int ScriptId{get;set;}
 		void Start();
 		void Update();
 		void Complete();

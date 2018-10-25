@@ -27,7 +27,6 @@ namespace Mango.Framework.Core
 			if (Singleton<T>.s_instance == null)
 			{
 				Singleton<T>.s_instance = Activator.CreateInstance<T>();
-				(Singleton<T>.s_instance as Singleton<T>).Init();
 			}
 		}
 
@@ -35,7 +34,6 @@ namespace Mango.Framework.Core
 		{
 			if (Singleton<T>.s_instance != null)
 			{
-				(Singleton<T>.s_instance as Singleton<T>).UnInit();
 				Singleton<T>.s_instance = (T)((object)null);
 			}
 		}
@@ -52,14 +50,6 @@ namespace Mango.Framework.Core
 		public static bool HasInstance()
 		{
 			return Singleton<T>.s_instance != null;
-		}
-
-		public virtual void Init()
-		{
-		}
-
-		public virtual void UnInit()
-		{
 		}
 	}
 }
