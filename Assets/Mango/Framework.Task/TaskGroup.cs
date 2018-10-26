@@ -8,18 +8,18 @@ namespace Mango.Framework.Task
 {
 	public sealed class TaskGroup : ITask ,IRecyclableObject
 	{
-		public static string CLASS_KEY="TaskGroup";
+		public static string CLASS_KEY = "TaskGroup" ;
         public string ClassKey {get{return CLASS_KEY;}}
-		public static TaskGroup CreateTaskGroup(IProcessTask Script)
+		public static TaskGroup CreateTaskGroup(IProcessTask script)
 		{
 			TaskGroup taskGroup = RecyclableObjectPool.Get<TaskGroup>();
-			taskGroup.Init(Script);
+			taskGroup.Init(script);
 			return taskGroup;
 		}
 
-        private void Init(IProcessTask Script)
+        private void Init(IProcessTask script)
         {
-            this.Script = Script; 
+            this.Script = script; 
         }
 
         private Queue<ITask> subTasks = new Queue<ITask>();
@@ -50,6 +50,7 @@ namespace Mango.Framework.Task
 			{
 				Status = eTaskStatus.Done;
 				onComplete();
+				this.RecycleTask();
 			}
 			else StartSubTask();
 		}

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mango.Framework.Task;
 using UnityEngine;
 
 namespace Mango.Framework.UI.Component
 {
-	public class UIComponent : MonoBehaviour
+	public class UIComponent : MonoBehaviour,IProcessTask
 	{
 		private Transform cachedTransform;
 		public Transform CachedTransform

@@ -22,12 +22,19 @@ namespace Mango.Framework.Task
 		{
 			TaskModule.instance.RemoveAllTasks(script);
 		}
-
+		public static void RecycleTask(this ITask task)
+		{
+			RecyclableObjectPool.Release(task as IRecyclableObject);
+		}
 		public static CoroutineTask StartCoroutineTask(this IProcessTask script,IEnumerator it)
 		{
 			CoroutineTask co = CoroutineTask.CreateTask(script,it);
 			script.AppendTask(co);
 			return co;
+		}
+		public static void StopCoroutineTask(this IProcessTask script,CoroutineTask co)
+		{
+			script.RemoveTask(co);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mango.Framework.Resource;
+using Mango.Framework.Task;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +30,7 @@ namespace Mango.Framework.UI.Component
 		{
 			if(!rwImg.texture || texName.Equals(rwImg.texture.name))
 			{
-				StartCoroutine(LoadTexture(onFinished));
+				this.StartCoroutineTask(LoadTexture(onFinished));
 			}
 			else
 			{

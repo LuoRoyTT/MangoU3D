@@ -31,6 +31,7 @@ namespace Mango.Coroutine
         public IProcessTask Script { get; private set; }
 
         public event Action onComplete;
+
         public void OnUse()
         {
             Status = eTaskStatus.WillDo;
@@ -71,6 +72,7 @@ namespace Mango.Coroutine
 			{
 				Status = eTaskStatus.Done;
 				onComplete();
+				this.RecycleTask();
 			}
 			else
 			{
