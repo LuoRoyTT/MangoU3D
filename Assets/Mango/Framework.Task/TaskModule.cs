@@ -12,7 +12,13 @@ namespace Mango.Framework.Task
         private DateTime lastFrameTime;
         private double standardDeltaTime;
 
-        public int Priority => throw new System.NotImplementedException();
+        public int Priority
+		{
+			get
+			{
+				return 1;
+			}
+		}
 
         public void Init()
         {
@@ -31,24 +37,19 @@ namespace Mango.Framework.Task
 			{
 				LinkedListNode<ITask> last = execlusiveTaskList.Last;
                 ITask task = last.Value;
-                switch (task.status)
+				task.onComplete += new Action(()=>{execlusiveTaskList.Remove(last);});
+                switch (task.Status)
                 {
                     case eTaskStatus.WillDo:
                         task.Start();
                         break;
                     case eTaskStatus.Doing:
                         task.Update();
-                        break;
-                    case eTaskStatus.Done:
-                        task.Complete();
-                        execlusiveTaskList.Remove(last);
-                        break;
-                    
+                        break;                   
                 }
                 this.lastFrameTime = DateTime.Now;
             }
 		}
-
         public void AppendTask(ITask task)
         {
 			if(task!=null) 
@@ -56,7 +57,7 @@ namespace Mango.Framework.Task
                 execlusiveTaskList.AddLast(task);
             }
         }
-        public void RemoveTask(int hashId,ITask task)
+        public void RemoveTask(ITask task)
         {
 			if(task==null) return;
 			LinkedListNode<ITask> tmp = execlusiveTaskList.Last;
@@ -64,7 +65,7 @@ namespace Mango.Framework.Task
 			bool flag = false;
 			while (tmp!=null)
 			{
-				if(nodeValue.ScriptId == hashId && nodeValue == task)
+				if(nodeValue == task)
 				{
 					flag = true;
 					break;
@@ -77,14 +78,14 @@ namespace Mango.Framework.Task
 				execlusiveTaskList.Remove(nodeValue);
 			}
         }
-        public void RemoveAllTasks(int hashId)
+        public void RemoveAllTasks(IProcessTask script)
         {
 			List<ITask> waitRemoveList = null;
 			LinkedList<ITask>.Enumerator enumerator = execlusiveTaskList.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
 				ITask current = enumerator.Current;
-				if (current.ScriptId == hashId)
+				if (current.Script == script)
 				{
 					waitRemoveList.Add(current);
 				}

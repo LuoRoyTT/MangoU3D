@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mango.Framework.Core;
-using Client.FuncAllocator;
 using UnityEngine;
 
 namespace Mango.Framework.Resource
@@ -13,10 +12,15 @@ namespace Mango.Framework.Resource
 		private Dictionary<string,IAssetLoader> loadersMap;
 		private List<IAssetLoader> waitForReleaseLoaders;
 		private float releaseInterval = 10f;
-		private FuncRec releaseLoaderFuncRec;
 		public AssetBundleManifest Manifest{get;private set;}
 
-        public int Priority => throw new NotImplementedException();
+        public int Priority
+		{
+			get
+			{
+				return 1;
+			}
+		}
 
         private static string LOAD_TYPE_CLASS_KEY;
 		public void Init()

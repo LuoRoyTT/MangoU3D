@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mango.Framework.Task
+namespace Mango.Coroutine
 {
-	public enum eTaskStatus
+	public interface IYieldBase 
 	{
-		WillDo,
-		Doing,
-		Done,
-		Release
+
 	}
 }
 

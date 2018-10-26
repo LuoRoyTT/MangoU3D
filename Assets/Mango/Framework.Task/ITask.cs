@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,11 +7,10 @@ namespace Mango.Framework.Task
 {
 	public interface ITask
 	{
-		eTaskStatus status{get;}
-		int ScriptId{get;set;}
+		eTaskStatus Status{get;}
+		IProcessTask Script{get;}
 		void Start();
 		void Update();
-		void Complete();
-
+		event Action onComplete;
 	}
 }

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-namespace Mango.Framework.Coroutine
+namespace Mango.Framework.Task
 {
-	public class MWaitForNextFrame : IYieldBase
+	public interface IProcessTask 
 	{
 
 	}

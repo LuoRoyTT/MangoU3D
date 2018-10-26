@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mango.Coroutine;
 using Mango.Framework.Core;
-using Mango.Framework.Coroutine;
+using Mango.Framework.Task;
 using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-    public class AssetBundleLoader : IRecyclableObject,IAssetLoader,ICoroutine
+    public class AssetBundleLoader : IRecyclableObject,IAssetLoader,IProcessTask
     {
         public static string CLASS_KEY="AssetBundleLoader";
         public static readonly int weight = 1;
@@ -84,7 +85,8 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                AppendCoroutine(LoadAssetBundle(onCacheFinished));
+                this.StartCoroutineTask(LoadAssetBundle(onCacheFinished));
+                // AppendCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
 
@@ -98,10 +100,14 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                AppendCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
+                this.StartCoroutineTask(LoadAssetBundle<AssetBundle>((bundle)=>
                 {
                     asynRequest.SetAsset(bundle);
                 }));
+                // AppendCoroutine(LoadAssetBundle<AssetBundle>((bundle)=>
+                // {
+                //     asynRequest.SetAsset(bundle);
+                // }));
             }
             return asynRequest;
         }
@@ -171,7 +177,7 @@ namespace Mango.Framework.Resource
         public void OnRelease()
         {
             status = eLoadStatus.Release;
-            RemoveAllCoroutine();
+            this.RemoveAllTasks();
             refCount = 0;
             bundle = null;
             dependencies = null;
@@ -179,20 +185,6 @@ namespace Mango.Framework.Resource
             path = null;
         }
 
-        public MCoroutine AppendCoroutine(IEnumerator it)
-        {
-            return MCoroutinManager.Instance.AppendCoroutine(this.GetHashCode(),it);
-        }
-
-        public void RemoveCoroutine(IEnumerator it)
-        {
-            MCoroutinManager.Instance.RemoveCoroutine(this.GetHashCode(),it);
-        }
-
-        public void RemoveAllCoroutine()
-        {
-            MCoroutinManager.Instance.RemoveAllCoroutine(this.GetHashCode());
-        }
     }
 }
 

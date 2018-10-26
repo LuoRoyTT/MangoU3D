@@ -3,14 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Mango.Framework.Core;
-using Mango.Framework.Coroutine;
 using Mango.Framework.Resource;
 using Mango.Framework.UI.Component;
 using UnityEngine;
 
 namespace Mango.Framework.UI.MVVM
 {
-	public class ViewBase : UIContainer,ICoroutine 
+	public class ViewBase : UIContainer 
 	{
 		// private	Dictionary<string, List<MethodInfo>> methodInfoMap;
 		// private List<SubViewBase> subViews;
@@ -47,22 +46,6 @@ namespace Mango.Framework.UI.MVVM
 		{
 			base.Hide();
 			OnHide();
-			RemoveAllCoroutine();
 		}
-
-        public MCoroutine AppendCoroutine(IEnumerator it)
-        {
-            return MCoroutinManager.Instance.AppendCoroutine(GetHashCode(),it);
-        }
-
-        public void RemoveCoroutine(IEnumerator it)
-        {
-			MCoroutinManager.Instance.AppendCoroutine(GetHashCode(),it);
-        }
-
-        public void RemoveAllCoroutine()
-        {
-			MCoroutinManager.Instance.RemoveAllCoroutine(GetHashCode());
-        }
     }
 }

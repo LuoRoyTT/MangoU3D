@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Mango.Framework.Coroutine
+namespace Mango.Coroutine
 {
 	public class MWaitForSeconds : IYieldBase
 	{
