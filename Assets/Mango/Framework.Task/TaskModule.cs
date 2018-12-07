@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mango.Framework.Core;
+using Mango.Framework.Update;
 using UnityEngine;
 
 namespace Mango.Framework.Task
@@ -22,7 +23,7 @@ namespace Mango.Framework.Task
 
         public void Init()
         {
-            throw new System.NotImplementedException();
+            UpdateModule.instance.onMainThreadUpdate += Update;
         }
 
         public void Release()
