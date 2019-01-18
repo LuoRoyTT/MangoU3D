@@ -6,80 +6,87 @@ using UnityEngine;
 
 namespace Mango.Framework.Resource
 { 
-	public class ResourceModule : Singleton<ResourceModule>,IGameModule
+	public struct ResID
 	{
+		static Dictionary<int,ResID> cacheIDs = new Dictionary<int, ResID>();
+		public static ResID New(int id)
+		{
+			ResID resID;
+			if(!cacheIDs.TryGetValue(id,out resID))
+			{
+				resID = new ResID(id); 
+			}
+			return resID;
+		}
+		private int id;
+		private string path;
+        internal string assetName;
 
-		private Dictionary<string,IAssetLoader> loadersMap;
-		private List<IAssetLoader> waitForReleaseLoaders;
+        public override string ToString()
+		{
+			if(string.IsNullOrEmpty(path))
+			{
+
+			}
+			return path;
+		}
+		private ResID(int id)
+		{
+			this.id = id;
+			path = null;
+			assetName = null;
+		}
+	}
+	public class ResourceModule : GameModule
+	{
+		private Dictionary<string,AssetBundleLoader> bundleLoadersMap;
+		private Dictionary<int,AssetLoader> assetsMap;
+		private List<IAssetLoader> waitForReleaseBundleLoaders;
 		private float releaseInterval = 10f;
 		public AssetBundleManifest Manifest{get;private set;}
 
-        public int Priority
+		public AssetLoader GetAssetLoader(int id)
 		{
-			get
+			if(assetsMap.ContainsKey(id))
 			{
-				return 1;
-			}
-		}
-
-        private static string LOAD_TYPE_CLASS_KEY;
-		public void Init()
-		{
-			LOAD_TYPE_CLASS_KEY = "AssetBundleRes";
-		}
-
-		public IAssetLoader Get(string assetName)
-		{
-			if(loadersMap.ContainsKey(assetName))
-			{
-				return loadersMap[assetName];
+				return assetsMap[id];
 			}
 			else
 			{
-				int index = waitForReleaseLoaders.FindIndex((a)=>{return a.AssetName.Equals(assetName);});
-				if(index!=-1)
-				{
-					IAssetLoader loader = waitForReleaseLoaders[index];
-					waitForReleaseLoaders.Remove(loader);
-					loadersMap.Add(assetName,loader);
-					return loader;
-				}
-				else
-				{
-					return CreateLoader(assetName);
-				}
+				AssetLoader loader = new AssetLoader(id);
+				assetsMap.Add(id,loader);
+				return loader;
 			}
 		}
 
-		private IAssetLoader CreateLoader(string assetName) 
+		public AssetBundleLoader GetBundleLoader(string bundleName)
 		{
-			IAssetLoader loader = RecyclableObjectPool.Get(LOAD_TYPE_CLASS_KEY) as IAssetLoader;
-			loadersMap.Add(assetName,loader);
-			loader.Init(assetName);
-			return loader;
-		}
-		public bool Exist(string assetName)
-		{
-			return loadersMap.ContainsKey(assetName);
-		}
-		public void Recycle(IAssetLoader loader)
-		{
-			loadersMap.Remove(loader.AssetName);
-			waitForReleaseLoaders.Add(loader);
-		}
-		public void ReleaseLoader()
-		{
-			if(waitForReleaseLoaders==null || waitForReleaseLoaders.Count==0) return;
-			for (int index = 0; index < waitForReleaseLoaders.Count; index++)
+			
+			if(bundleLoadersMap.ContainsKey(bundleName))
 			{
-				RecyclableObjectPool.Release(waitForReleaseLoaders[index] as IRecyclableObject);
+				return bundleLoadersMap[bundleName];
+			}
+			else
+			{
+				AssetBundleLoader loader = new AssetBundleLoader(bundleName);
+				bundleLoadersMap.Add(bundleName,loader);
+				return loader;
 			}
 		}
 
-        public void Release()
-        {
-            throw new NotImplementedException();
-        }
+		public void UnLoad(int id)
+		{
+			AssetLoader loader;
+			if(!assetsMap.TryGetValue(id,out loader))
+			{
+				Debug.LogError("asset not exits!");
+			}
+			loader.UnLoad();
+		}
+		internal void AddReleaseBundleTask(string bundleName)
+		{
+
+		}
     }
 }
 

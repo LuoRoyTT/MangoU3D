@@ -6,35 +6,25 @@ using UnityEngine;
 
 namespace Mango.Framework.Task
 {
-	public sealed class TaskGroup : ITask ,IRecyclableObject
-	{
-		public static string CLASS_KEY = "TaskGroup" ;
-        public string ClassKey {get{return CLASS_KEY;}}
-		public static TaskGroup CreateTaskGroup(IProcessTask script)
-		{
-			TaskGroup taskGroup = RecyclableObjectPool.Get<TaskGroup>();
-			taskGroup.Init(script);
-			return taskGroup;
-		}
-
-        private void Init(IProcessTask script)
+	public sealed class TaskGroup : AbstractTask 
+	{	
+        public TaskGroup()
         {
-            this.Script = script; 
+			Status = eTaskStatus.WillDo;
         }
 
-        private Queue<ITask> subTasks = new Queue<ITask>();
-		private ITask current;
-
-        public event Action onComplete;
-
+        private Queue<AbstractTask> subTasks = new Queue<AbstractTask>();
+		private AbstractTask current;
         public int Count{get{return subTasks.Count;}}
         public eTaskStatus Status{get;private set;}
 
-        public IProcessTask Script { get; private set; }
-
-        public void Start()
+        public override void Start()
         {
-            if (subTasks==null || subTasks.Count==0) return;
+            if (subTasks==null || subTasks.Count==0) 
+			{
+				SubTaskCompleteCallback();
+				return;
+			}
 			Status = eTaskStatus.Doing;
 			StartSubTask();
         }
@@ -50,11 +40,10 @@ namespace Mango.Framework.Task
 			{
 				Status = eTaskStatus.Done;
 				onComplete();
-				this.RecycleTask();
 			}
 			else StartSubTask();
 		}
-        public void Update()
+        public override void Update()
         {
             if (current!=null)
 			{
@@ -62,7 +51,7 @@ namespace Mango.Framework.Task
 			}
         }
 
-        public TaskGroup AddSubTask(ITask subTask)
+        public TaskGroup AddSubTask(AbstractTask subTask)
 		{
 			if (subTask!=null)
 			{
@@ -70,25 +59,6 @@ namespace Mango.Framework.Task
 			}
 			return this;
 		}
-		public TaskGroup OnComplete(Action action)
-		{
-			onComplete += action;
-			return this;
-		}
-
-        public void OnUse()
-        {
-            Status = eTaskStatus.WillDo;
-        }
-
-        public void OnRelease()
-        {
-			current = null;
-            subTasks.Clear();
-			Script = null;
-			onComplete = null;
-			Status = eTaskStatus.Release;
-        }
     }
 }
 

@@ -20,6 +20,7 @@ namespace Mango.Framework.Core
 
 		protected Singleton()
 		{
+
 		}
 
 		public static void CreateInstance()

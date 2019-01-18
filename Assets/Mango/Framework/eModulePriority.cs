@@ -6,7 +6,7 @@ namespace Mango.Framework
 {
 	public enum eModulePriority 
 	{
-		First = 1,
+		First = 0,
 		Default = 100,
 		Last = 200
 	}

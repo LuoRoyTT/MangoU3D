@@ -7,26 +7,18 @@ using UnityEngine;
 
 namespace Mango.Framework.Task
 {
-	public class TaskModule :Singleton<TaskModule>,IGameModule
+	public class TaskModule : GameModule
 	{
-		LinkedList<ITask> execlusiveTaskList = new LinkedList<ITask>();
+		LinkedList<AbstractTask> execlusiveTaskList = new LinkedList<AbstractTask>();
         private DateTime lastFrameTime;
         private double standardDeltaTime;
 
-        public int Priority
-		{
-			get
-			{
-				return 1;
-			}
-		}
-
-        public void Init()
+        protected override void OnInit()
         {
-            UpdateModule.instance.onMainThreadUpdate += Update;
+            Mango.GetModule<UpdateModule>().onMainThreadUpdate += Update;
         }
 
-        public void Release()
+        protected override void OnRelease()
         {
             Clear();
         }
@@ -36,10 +28,10 @@ namespace Mango.Framework.Task
 			this.lastFrameTime = DateTime.Now;
 			while ((DateTime.Now - this.lastFrameTime).TotalMilliseconds < standardDeltaTime && this.execlusiveTaskList.Count > 0)
 			{
-				LinkedListNode<ITask> last = execlusiveTaskList.Last;
-                ITask task = last.Value;
+				LinkedListNode<AbstractTask> last = execlusiveTaskList.Last;
+                AbstractTask task = last.Value;
 				task.onComplete += new Action(()=>{execlusiveTaskList.Remove(last);});
-                switch (task.Status)
+                switch (task.status)
                 {
                     case eTaskStatus.WillDo:
                         task.Start();
@@ -51,18 +43,19 @@ namespace Mango.Framework.Task
                 this.lastFrameTime = DateTime.Now;
             }
 		}
-        public void AppendTask(ITask task)
+        public AbstractTask AppendTask(AbstractTask task)
         {
 			if(task!=null) 
             {
                 execlusiveTaskList.AddLast(task);
             }
+			return task;
         }
-        public void RemoveTask(ITask task)
+        public void RemoveTask(AbstractTask task)
         {
 			if(task==null) return;
-			LinkedListNode<ITask> tmp = execlusiveTaskList.Last;
-			ITask nodeValue = tmp.Value;
+			LinkedListNode<AbstractTask> tmp = execlusiveTaskList.Last;
+			AbstractTask nodeValue = tmp.Value;
 			bool flag = false;
 			while (tmp!=null)
 			{
@@ -79,26 +72,7 @@ namespace Mango.Framework.Task
 				execlusiveTaskList.Remove(nodeValue);
 			}
         }
-        public void RemoveAllTasks(IProcessTask script)
-        {
-			List<ITask> waitRemoveList = null;
-			LinkedList<ITask>.Enumerator enumerator = execlusiveTaskList.GetEnumerator();
-			while (enumerator.MoveNext())
-			{
-				ITask current = enumerator.Current;
-				if (current.Script == script)
-				{
-					waitRemoveList.Add(current);
-				}
-			}
-			if(waitRemoveList!=null)
-			{
-				for (int i = 0; i < waitRemoveList.Count; i++)
-				{
-					execlusiveTaskList.Remove(waitRemoveList[i]);
-				}
-			}
-        }
+
 		public void Clear()
 		{
 			if(execlusiveTaskList.Count > 0)

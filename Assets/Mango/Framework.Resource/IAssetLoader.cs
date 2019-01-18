@@ -15,14 +15,12 @@ namespace Mango.Framework.Resource
 
 	public interface IAssetLoader
 	{
-		string AssetName{get;}
+		ResID ResID{get;}
 		eLoadStatus Status{get;}
-		int RefCount{get;}
-		void Init(string assetName);
 		UnityEngine.Object Load();
 		T Load<T>() where T:UnityEngine.Object; 
 		void LoadAsyn<T>(Action<T> onCacheFinished) where T:UnityEngine.Object;
 		IAssetAsynRequest LoadAsyn();
-		void Recycle();
+		void UnLoad();
 	} 
 }

@@ -1,36 +1,42 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Mango.Coroutine;
 using Mango.Framework.Core;
 using Mango.Framework.Task;
+using Mango.Framework.Task.Coroutine;
 using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-    public class AssetBundleLoader : IRecyclableObject,IAssetLoader,IProcessTask
+    public class AssetBundleLoader 
     {
-        public static string CLASS_KEY="AssetBundleLoader";
         public static readonly int weight = 1;
-        public string ClassKey {get{return CLASS_KEY;}}
-        public string AssetName {get{return assetName;}}
-        private string assetName;
-
-        public int RefCount{get{return refCount;}}
+        public string BundleName
+        {
+            get
+            {
+                return bundleName;
+            }
+        }
+        private string bundleName;
         private int refCount;
-
         public eLoadStatus Status{get{return status;}}
         private eLoadStatus status;
         private AssetBundle bundle;
         private string path;
         private string[] dependencies;
+        private ResourceModule resourceModule;
+        private TaskModule taskModule;
 
-        public void Init(string assetName)
+        public AssetBundleLoader(string bundleName)
         {
             status = eLoadStatus.idle;
-            this.assetName = assetName;
-            path = ResourceSetting.GetBundlePathByBundleName(assetName);
+            this.bundleName = bundleName;
+            path = ResourceSetting.GetBundlePathByBundleName(bundleName);
+            resourceModule = Mango.GetModule<ResourceModule>();
+            taskModule = Mango.GetModule<TaskModule>();
         }
+
         private bool CheckLoadStatus()
         {
             if(status == eLoadStatus.Loading)
@@ -40,43 +46,33 @@ namespace Mango.Framework.Resource
             return true;
         }
 
-        public UnityEngine.Object Load()
+        public AssetBundle Load()
         {
             if(!CheckLoadStatus()) return null;
             if(bundle)
             {
-                return (UnityEngine.Object)bundle;
+                return bundle;
             }
             else
             {
                 if(dependencies==null||dependencies.Length==0)
                 {
-                    dependencies = ResourceModule.instance.Manifest.GetAllDependencies(assetName);
+                    dependencies = resourceModule.Manifest.GetAllDependencies(bundleName);
                 }
                 if(dependencies!=null)
                 {
                     for (int i = 0; i < dependencies.Length; i++)
                     {
-                        IAssetLoader loader = ResourceModule.instance.Get(dependencies[i]);
+                        AssetBundleLoader loader = resourceModule.GetBundleLoader(dependencies[i]);
                         loader.Load();
                     }
                 }
-                AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
-                while (request.assetBundle==null)
-                {
-
-                }
-                bundle = request.assetBundle;
+                var bundle = AssetBundle.LoadFromFile(path);
                 return bundle;
             }
         }
 
-        public T Load<T>() where T : UnityEngine.Object
-        {
-            return Load() as T;
-        }
-
-        public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
+        public void LoadAsyn(Action<AssetBundle> onCacheFinished)
         {
             if(!CheckLoadStatus()) return;
             if(bundle)
@@ -85,8 +81,7 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                this.StartCoroutineTask(LoadAssetBundle(onCacheFinished));
-                // AppendCoroutine(LoadAssetBundle(onCacheFinished));
+                taskModule.StartCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
 
@@ -100,7 +95,7 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                this.StartCoroutineTask(LoadAssetBundle<AssetBundle>((bundle)=>
+                taskModule.StartCoroutine(LoadAssetBundle((bundle)=>
                 {
                     asynRequest.SetAsset(bundle);
                 }));
@@ -111,20 +106,20 @@ namespace Mango.Framework.Resource
             }
             return asynRequest;
         }
-        private void LoadedCallback<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
+        private void LoadedCallback(Action<AssetBundle> onCacheFinished)
         {
             status = eLoadStatus.Loaded;
             if(onCacheFinished!=null)
             {
-                onCacheFinished(bundle as T);
+                onCacheFinished(bundle);
             }
         }
 
-        private IEnumerator LoadAssetBundle<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
+        private IEnumerator LoadAssetBundle(Action<AssetBundle> onCacheFinished)
         {
             if(dependencies==null||dependencies.Length==0)
             {
-                dependencies = ResourceModule.instance.Manifest.GetAllDependencies(assetName);
+                dependencies = resourceModule.Manifest.GetAllDependencies(bundleName);
             }
             if(dependencies!=null)
             {
@@ -132,8 +127,8 @@ namespace Mango.Framework.Resource
                 int dependenciesCount = dependencies.Length;
                 for (int i = 0; i < dependenciesCount; i++)
                 {
-                    AssetBundleLoader loader = ResourceModule.instance.Get(dependencies[i]) as AssetBundleLoader;
-                    loader.LoadAsyn<AssetBundle>((bundle)=>
+                    AssetBundleLoader loader = resourceModule.GetBundleLoader(dependencies[i]);
+                    loader.LoadAsyn((bundle)=>
                     {
                         dependenciesLoadedCount++;
                     });
@@ -152,39 +147,24 @@ namespace Mango.Framework.Resource
             }
             LoadedCallback(onCacheFinished);
         }
-        public void Recycle()
+        public void UnLoad()
         {
             if(status!=eLoadStatus.Loaded)
             {
                 Debug.LogError("asset尚未完成加载!");
                 return;
             }
-             bundle.GetAllAssetNames();
+            bundle.GetAllAssetNames();
             refCount--;
             if (refCount==0)
             {
-                ResourceModule.instance.Recycle(this);
+                resourceModule.AddReleaseBundleTask(bundleName);
             }
             for (int i = 0; i < dependencies.Length; i++)
             {
-                ResourceModule.instance.Get(dependencies[i]).Recycle();
+                resourceModule.GetBundleLoader(dependencies[i]).UnLoad();
             }
         }
-        public void OnUse()
-        {
-
-        }
-        public void OnRelease()
-        {
-            status = eLoadStatus.Release;
-            this.RemoveAllTasks();
-            refCount = 0;
-            bundle = null;
-            dependencies = null;
-            assetName = null;
-            path = null;
-        }
-
     }
 }
 

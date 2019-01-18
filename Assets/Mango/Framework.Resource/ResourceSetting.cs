@@ -6,7 +6,7 @@ namespace Mango.Framework.Resource
 {
 	public class ResourceSetting 
 	{
-		public static string GetBundleNameByAssetName(string assetName)
+		public static string GetBundleName(ResID resID)
 		{
 			return null;
 		}

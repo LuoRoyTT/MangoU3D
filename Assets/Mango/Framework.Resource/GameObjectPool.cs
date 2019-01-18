@@ -3,35 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using Mango.Framework.Core;
 using Mango.Framework.Task;
+using Mango.Framework.Task.Coroutine;
 using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-	public class GameObjectPool : MonoSingleton<GameObjectPool>,IProcessTask
+	public class GameObjectPool : MonoSingleton<GameObjectPool>
 	{
-		Dictionary<string,List<string>> assetsMap;
+		Dictionary<ResID,List<string>> assetsMap;
 		Dictionary<string,List<IAssetLoader>> groupMap;
 		Dictionary<string,List<GameObject>> pool;
 		private bool loading;
-
-		public void PreloadAsset(string groupName,Action<float> update,Action onFinished,params string[] assets)
+		private ResourceModule resourceModule;
+		private TaskModule taskModule;
+		protected override void Init()
+		{
+			resourceModule = Mango.GetModule<ResourceModule>();
+			taskModule = Mango.GetModule<TaskModule>();
+		}
+		public void PreloadAsset(string groupName,Action<float> update,Action onFinished,params int[] ids)
 		{
 			if(loading) return;
 			if(String.IsNullOrEmpty(groupName)) return;
-			if(assets==null) return;
+			if(ids==null) return;
 			loading = true;
-			HashSet<string> assetsHashSet = null;
+			HashSet<int> assetsHashSet = null;
 			List<IAssetLoader> loaders = null;
-			for (int i = 0; i < assets.Length; i++)
+			for (int i = 0; i < ids.Length; i++)
 			{
-				assetsHashSet.Add(assets[i]);
+				assetsHashSet.Add(ids[i]);
 			}
-			foreach (string asset in assetsHashSet)
+			foreach (int id in assetsHashSet)
 			{
-				loaders.Add(ResourceModule.instance.Get(asset));
+				loaders.Add(resourceModule.GetAssetLoader(id));
 			}
 			int index = 0;
-			this.StartCoroutineTask(DoPreloadAsset(groupName,loaders,onFinished,index));
+			taskModule.StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
 		}
 		private IEnumerator DoPreloadAsset(string groupName,List<IAssetLoader> loaders,Action onFinished,int index)
 		{
@@ -44,14 +51,14 @@ namespace Mango.Framework.Resource
 				groupMap.Add(groupName,loaders);
 				for (int i = 0; i < loaders.Count; i++)
 				{
-					string asset = loaders[i].AssetName;
-					if(assetsMap.ContainsKey(asset))
+					ResID resID = loaders[i].ResID;
+					if(assetsMap.ContainsKey(resID))
 					{
-						assetsMap[asset].Add(groupName);
+						assetsMap[resID].Add(groupName);
 					}
 					else
 					{
-						assetsMap.Add(asset,new List<string>{groupName});
+						assetsMap.Add(resID,new List<string>{groupName});
 					}
 				}
 				loading = false;
@@ -59,7 +66,7 @@ namespace Mango.Framework.Resource
 			}
 			else
 			{
-				this.StartCoroutineTask(DoPreloadAsset(groupName,loaders,onFinished,index));
+				taskModule.StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
 			}
 		}
 		public void ClearGoup(string groupName)
@@ -71,30 +78,32 @@ namespace Mango.Framework.Resource
 				{
 					for (int i = 0; i < loaders.Count; i++)
 					{
-						if(assetsMap.ContainsKey(loaders[i].AssetName))
+						if(assetsMap.ContainsKey(loaders[i].ResID))
 						{
-							List<string> groups = assetsMap[loaders[i].AssetName];
+							List<string> groups = assetsMap[loaders[i].ResID];
 							if(groups!=null && groups.Count>0)
 							{
 								groups.RemoveAt(groups.Count-1);
 							}
 							if(groups==null || groups.Count==0)
 							{
-								assetsMap.Remove(loaders[i].AssetName);
-								pool.Remove(loaders[i].AssetName);
+								assetsMap.Remove(loaders[i].ResID);
+								pool.Remove(loaders[i].ResID.assetName);
 							}
 						}
-						loaders[i].Recycle();
+						loaders[i].UnLoad();
 					}
 				}
 				groupMap.Remove(groupName);
 			}
 		}
-		public GameObject CreateGO(string name,Transform parent,bool active)
+		public GameObject CreateGO(int id,Transform parent,bool active)
 		{
-			if(pool.ContainsKey(name))
+			ResID resID = ResID.New(id);
+			string assetName = resID.assetName;
+			if(pool.ContainsKey(assetName))
 			{
-				List<GameObject> goes = pool[name];
+				List<GameObject> goes = pool[assetName];
 				if(goes!=null && goes.Count > 0)
 				{
 					GameObject go = goes[0];
@@ -103,13 +112,13 @@ namespace Mango.Framework.Resource
 					goes.Remove(go);
 					if(goes==null || goes.Count == 0)
 					{
-						pool.Remove(name);
+						pool.Remove(assetName);
 					}
 					return go;
 				}
 			}
 			List<string> groups;
-			if (assetsMap.TryGetValue(name,out groups))
+			if (assetsMap.TryGetValue(resID,out groups))
 			{
 				if(groups.Count>0)
 				{
@@ -119,7 +128,7 @@ namespace Mango.Framework.Resource
 						List<IAssetLoader> loaders = groupMap[groupName];
 						if(loaders.Count>0)
 						{
-							IAssetLoader loader = groupMap[name].Find(a=>a.AssetName.Equals(name));
+							IAssetLoader loader = groupMap[name].Find(a=>a.ResID.Equals(name));
 							GameObject prefab = loader.Load<GameObject>();
 							GameObject go = GameObject.Instantiate(prefab);
 							go.transform.SetParent(parent);
@@ -135,7 +144,7 @@ namespace Mango.Framework.Resource
 
 		public void Recycle(GameObject go)
 		{
-			if(pool.ContainsKey(name))
+			if(pool.ContainsKey(go.name))
 			{
 				List<GameObject> goes = pool[name];
 				if(goes!=null)

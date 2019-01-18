@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Mango.Framework.Network
 {
-    public class NetworkModule : Singleton<NetworkModule>,IGameModule
+    public class NetworkModule : GameModule
     {
         public int Priority 
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Mango.Framework.UI.Component
 {
-	public class UIComponent : MonoBehaviour,IProcessTask
+	public class UIComponent : MonoBehaviour
 	{
 		private Transform cachedTransform;
 		public Transform CachedTransform
@@ -58,8 +58,10 @@ namespace Mango.Framework.UI.Component
 			initialized = true;
 			belongedContainer.ReceiveInitializedMsg();
 		}
+		public virtual void Init(){}
 		public virtual void Appear(){}
 		public virtual void Hide(){}
+		public virtual void Dispose(){}
 		public virtual void Reset(){}
 	}
 }

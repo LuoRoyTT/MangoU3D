@@ -7,23 +7,23 @@ namespace Mango.Framework
 {
 	public static class Mango 
 	{
-		private readonly static LinkedList<IGameModule> gameModules = new LinkedList<IGameModule>();
+		private readonly static LinkedList<GameModule> gameModules = new LinkedList<GameModule>();
 		public static void GameMain()
 		{
-			Type typeFromHandle = typeof(IGameModule);
+			Type typeFromHandle = typeof(GameModule);
 			Type[] types = typeFromHandle.Assembly.GetTypes();
 			for (int i = 0; i < types.Length; i++)
 			{
 				Type type = types[i];
 				if (!type.IsAbstract && type.IsSealed && type.IsSubclassOf(typeFromHandle))
 				{
-					IGameModule module = (IGameModule)Activator.CreateInstance(type);
+					GameModule module = (GameModule)Activator.CreateInstance(type);
 					if (module == null)
 					{
 						throw new System.NotImplementedException();
 					}
 
-					LinkedListNode<IGameModule> current = gameModules.First;
+					LinkedListNode<GameModule> current = gameModules.First;
 					while (current != null)
 					{
 						if (module.Priority > current.Value.Priority)
@@ -46,13 +46,13 @@ namespace Mango.Framework
 			}
 		}
 
-		public static T GetModule<T>() where T : IGameModule
+		public static T GetModule<T>() where T : GameModule
 		{
 			Type moduleType = typeof(T);
 			return (T)GetModule(moduleType);
 		}
 
-		private static IGameModule GetModule(Type moduleType)
+		private static GameModule GetModule(Type moduleType)
 		{
 			foreach (var module in gameModules)
 			{

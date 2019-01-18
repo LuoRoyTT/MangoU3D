@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Mango.Framework.Update
 {
-    public class UpdateModule : Singleton<UpdateModule>, IGameModule
+    public class UpdateModule : GameModule
     {
-        public int Priority
+        public override int Priority
 		{
 			get
 			{
@@ -19,16 +19,6 @@ namespace Mango.Framework.Update
         
         public event Action onMainThreadUpdate;
         public event Action onNetThreadUpdate;
-
-        public void Init()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Release()
-        {
-            throw new System.NotImplementedException();
-        }
 
     }
 }
