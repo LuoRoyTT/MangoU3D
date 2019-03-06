@@ -6,10 +6,10 @@ namespace Mango.Framework.Task
 {
 	public enum eTaskStatus
 	{
+		Invalid,
 		WillDo,
 		Doing,
 		Done,
-		Release
 	}
 }
 

@@ -10,22 +10,21 @@ namespace Mango.Framework.Task
 	{	
         public TaskGroup()
         {
-			Status = eTaskStatus.WillDo;
+			status = eTaskStatus.WillDo;
         }
 
         private Queue<AbstractTask> subTasks = new Queue<AbstractTask>();
 		private AbstractTask current;
         public int Count{get{return subTasks.Count;}}
-        public eTaskStatus Status{get;private set;}
 
-        public override void Start()
+        protected override void OnStart()
         {
             if (subTasks==null || subTasks.Count==0) 
 			{
 				SubTaskCompleteCallback();
 				return;
 			}
-			Status = eTaskStatus.Doing;
+			status = eTaskStatus.Doing;
 			StartSubTask();
         }
 		private void StartSubTask()
@@ -38,12 +37,12 @@ namespace Mango.Framework.Task
 		{
 			if (subTasks.Count==0) 
 			{
-				Status = eTaskStatus.Done;
+				status = eTaskStatus.Done;
 				onComplete();
 			}
 			else StartSubTask();
 		}
-        public override void Update()
+        protected override void OnUpdate()
         {
             if (current!=null)
 			{

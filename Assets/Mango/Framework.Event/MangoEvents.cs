@@ -5,15 +5,15 @@ using UnityEngine;
 namespace Mango.Framework.Event
 {
 
-	public class Events 
+	public class MangoEvents 
 	{
-        public Events()
+        public MangoEvents()
         {
             eventTree = new Dictionary<ushort, EventNode>();
         }
         private Dictionary<ushort, EventNode> eventTree;
 
-        public void AddListener(ushort msgId,EventCallback callback)
+        public void AddListener(ushort msgId,MangoDelegate callback)
         {
             if(Contains(msgId,callback))
             {
@@ -22,7 +22,7 @@ namespace Mango.Framework.Event
             EventNode eventNode = new EventNode(callback);
             InternalAddListener(msgId,eventNode);
         }
-        public void AddListener(ushort msgId,EventCallback1 callback1)
+        public void AddListener(ushort msgId,MangoDelegate<IMessage> callback1)
         {
             if(Contains(msgId,callback1))
             {
@@ -49,7 +49,7 @@ namespace Mango.Framework.Event
                 tempNode.next = eventNode;
             }
         }
-        public void RemoveListener(ushort msgId,EventCallback callback)
+        public void RemoveListener(ushort msgId,MangoDelegate callback)
         {
             if(!Contains(msgId,callback))
             {
@@ -58,8 +58,7 @@ namespace Mango.Framework.Event
             EventNode eventNode = new EventNode(callback);
             InternalRemoveListener(msgId,eventNode);
         }
-
-        public void RemoveListener(ushort msgId,EventCallback1 callback1)
+        public void RemoveListener(ushort msgId,MangoDelegate<IMessage> callback1)
         {
             if(!Contains(msgId,callback1))
             {
@@ -68,7 +67,7 @@ namespace Mango.Framework.Event
             EventNode eventNode = new EventNode(callback1);
             InternalRemoveListener(msgId,eventNode);
         }
-        public void InternalRemoveListener(ushort msgId,EventNode eventNode)
+        private void InternalRemoveListener(ushort msgId,EventNode eventNode)
         {
             EventNode header;
             if(!eventTree.TryGetValue(msgId,out header))
@@ -145,7 +144,7 @@ namespace Mango.Framework.Event
             }
         }
         
-        public bool Contains(ushort msgId,EventCallback callback)
+        public bool Contains(ushort msgId,MangoDelegate callback)
         {
             EventNode node;
             if(!eventTree.TryGetValue(msgId,out node))
@@ -167,7 +166,7 @@ namespace Mango.Framework.Event
                 return node.SameAs(callback);
             }
         }
-        public bool Contains(ushort msgId,EventCallback1 callback1)
+        public bool Contains(ushort msgId,MangoDelegate<IMessage> callback1)
         {
             EventNode node;
             if(!eventTree.TryGetValue(msgId,out node))

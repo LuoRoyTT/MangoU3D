@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Mango.Framework.UI.MVVM
+namespace Mango.UI.MVVM
 {
     public delegate void ValueChangeAction(object oldValue,object newValue);
     public class BindableProperty:IEnumerable 
@@ -11,7 +11,6 @@ namespace Mango.Framework.UI.MVVM
 
         private ValueChangeAction OnValueChanged;
         private ValueChangeAction OnChildValueChanged;
-        //private UnityEvent<T,T> OnValueChanged;
         private List<BindableProperty> chlidCollection;
         public int Count
         {
@@ -66,19 +65,19 @@ namespace Mango.Framework.UI.MVVM
         }
         public BindableProperty(ValueChangeAction onValueChanged)
         {
-            OnValueChanged+=onValueChanged;
+            OnValueChanged += onValueChanged;
         }
         public BindableProperty(object value,ValueChangeAction onValueChanged)
         {
             _value = value;
-            OnValueChanged+=onValueChanged;
+            OnValueChanged += onValueChanged;
         }
         public BindableProperty(object value,ValueChangeAction onValueChanged,ValueChangeAction onChildValueChanged)
         {
             if(value is IEnumerable)
             {
                 Clear();
-                OnValueChanged+=onValueChanged;
+                OnValueChanged += onValueChanged;
                 Value=value;
                 OnChildValueChanged=onChildValueChanged;
                 foreach (var item in value as IEnumerable)
@@ -109,12 +108,12 @@ namespace Mango.Framework.UI.MVVM
 
         public void AddListener(ValueChangeAction onValueChanged)
         {
-            OnValueChanged+=onValueChanged;
+            OnValueChanged += onValueChanged;
         }
 
         public void RemoveListener(ValueChangeAction onValueChanged)
         {
-            OnValueChanged-=onValueChanged;
+            OnValueChanged -= onValueChanged;
         }
 
         public void RemoveAllListeners()
@@ -130,9 +129,15 @@ namespace Mango.Framework.UI.MVVM
         public void Clear()
         {
             _value = default(object);
-            if(OnValueChanged!=null) OnValueChanged=null;
+            if(OnValueChanged!=null) 
+            {
+                OnValueChanged=null;
+            }
             chlidCollection.Clear();
-            if(OnChildValueChanged!=null) OnChildValueChanged=null;
+            if(OnChildValueChanged!=null) 
+            {
+                OnChildValueChanged=null;
+            }
 
         }
 

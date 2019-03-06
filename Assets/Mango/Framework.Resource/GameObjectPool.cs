@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mango.Core;
 using Mango.Framework.Core;
 using Mango.Framework.Task;
 using Mango.Framework.Task.Coroutine;
@@ -8,18 +9,16 @@ using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-	public class GameObjectPool : MonoSingleton<GameObjectPool>
+	public class GameObjectPool : MangoSingleton<GameObjectPool>
 	{
 		Dictionary<ResID,List<string>> assetsMap;
 		Dictionary<string,List<IAssetLoader>> groupMap;
 		Dictionary<string,List<GameObject>> pool;
 		private bool loading;
 		private ResourceModule resourceModule;
-		private TaskModule taskModule;
 		protected override void Init()
 		{
 			resourceModule = Mango.GetModule<ResourceModule>();
-			taskModule = Mango.GetModule<TaskModule>();
 		}
 		public void PreloadAsset(string groupName,Action<float> update,Action onFinished,params int[] ids)
 		{
@@ -38,7 +37,7 @@ namespace Mango.Framework.Resource
 				loaders.Add(resourceModule.GetAssetLoader(id));
 			}
 			int index = 0;
-			taskModule.StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
+			StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
 		}
 		private IEnumerator DoPreloadAsset(string groupName,List<IAssetLoader> loaders,Action onFinished,int index)
 		{
@@ -66,7 +65,7 @@ namespace Mango.Framework.Resource
 			}
 			else
 			{
-				taskModule.StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
+				StartCoroutine(DoPreloadAsset(groupName,loaders,onFinished,index));
 			}
 		}
 		public void ClearGoup(string groupName)
@@ -128,7 +127,7 @@ namespace Mango.Framework.Resource
 						List<IAssetLoader> loaders = groupMap[groupName];
 						if(loaders.Count>0)
 						{
-							IAssetLoader loader = groupMap[name].Find(a=>a.ResID.Equals(name));
+							IAssetLoader loader = groupMap[groupName].Find(a=>a.ResID.Equals(groupName));
 							GameObject prefab = loader.Load<GameObject>();
 							GameObject go = GameObject.Instantiate(prefab);
 							go.transform.SetParent(parent);
@@ -146,7 +145,7 @@ namespace Mango.Framework.Resource
 		{
 			if(pool.ContainsKey(go.name))
 			{
-				List<GameObject> goes = pool[name];
+				List<GameObject> goes = pool[go.name];
 				if(goes!=null)
 				{
 					goes.Add(go);

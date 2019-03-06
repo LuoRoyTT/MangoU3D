@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Mango.Framework.Core
+namespace Mango.Core
 {
 	public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
 	{

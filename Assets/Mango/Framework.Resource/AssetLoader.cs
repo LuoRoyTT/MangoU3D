@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-    public class AssetLoader : IAssetLoader
+    public class AssetLoader : MangoObject, IAssetLoader
     {
         public static readonly int weight = 1;
         public ResID ResID 
@@ -26,13 +26,11 @@ namespace Mango.Framework.Resource
 
 		private AssetBundleLoader bundleLoader;
         private ResourceModule resourceModule;
-        private TaskModule taskModule;
         public AssetLoader(int id)
         {
             status = eLoadStatus.idle;
             resID = ResID.New(id);
             resourceModule = Mango.GetModule<ResourceModule>();
-            taskModule = Mango.GetModule<TaskModule>();
         }
 
         private bool CheckLoadStatus()
@@ -82,7 +80,7 @@ namespace Mango.Framework.Resource
 				}
 				bundleLoader.LoadAsyn((bundle)=>
 				{
-                    taskModule.StartCoroutine(LoadAsset((asset)=>
+                    StartCoroutine(LoadAsset((asset)=>
 					{
 						asynRequest.SetAsset(asset);
 					}));
@@ -109,7 +107,7 @@ namespace Mango.Framework.Resource
         }
         public void LoadAsyn<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {
-            taskModule.StartCoroutine(LoadAsset<T>(onCacheFinished));
+            StartCoroutine(LoadAsset<T>(onCacheFinished));
         }
         private IEnumerator LoadAsset<T>(Action<T> onCacheFinished) where T : UnityEngine.Object
         {

@@ -9,14 +9,6 @@ namespace Mango.Framework.UI
 {
     public class UIModule : GameModule
     {
-        public override int Priority
-        {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-
         private Dictionary<Type,IView> views;
 		private IView current;
 		public Transform Root
@@ -27,20 +19,20 @@ namespace Mango.Framework.UI
 			}
 		}
 		private Transform root;
-        private Events uievents;
-		public void AddUIListener(ushort msgId,EventCallback callback)
+        private MangoEvents uievents;
+		public void AddUIListener(ushort msgId,MangoDelegate callback)
 		{
 			uievents.AddListener(msgId,callback);
 		}
-		public void AddUIListener(ushort msgId,EventCallback1 callback1)
+		public void AddUIListener(ushort msgId,MangoDelegate<IMessage> callback1)
 		{
 			uievents.AddListener(msgId,callback1);
 		}
-		public void RemoveUIListener(ushort msgId,EventCallback callback)
+		public void RemoveUIListener(ushort msgId,MangoDelegate callback)
 		{
 			uievents.RemoveListener(msgId,callback);
 		}
-		public void RemoveUIListener(ushort msgId,EventCallback1 callback1)
+		public void RemoveUIListener(ushort msgId,MangoDelegate<IMessage> callback1)
 		{
 			uievents.RemoveListener(msgId,callback1);
 		}

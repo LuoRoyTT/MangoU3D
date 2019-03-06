@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mango.Framework.UI.Component
+namespace Mango.UI.Component
 {
 	public class UIWindow : UIContainer 
 	{

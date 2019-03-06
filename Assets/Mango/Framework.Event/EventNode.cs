@@ -5,12 +5,10 @@ using UnityEngine;
 
 namespace Mango.Framework.Event
 {
-    public delegate void EventCallback();
-    public delegate void EventCallback1(IMessage message);
     public class EventNode
     {
-        private EventCallback callback;
-        private EventCallback1 callback1;
+        private MangoDelegate callback;
+        private MangoDelegate<IMessage> callback1;
         private bool empty;
         public bool Empty
         {
@@ -20,21 +18,21 @@ namespace Mango.Framework.Event
             }
         }
         public EventNode next;
-        public EventNode(EventCallback callback)
+        public EventNode(MangoDelegate callback)
         {
             this.callback = callback;
             next = null;
         }
-        public EventNode(EventCallback1 callback1)
+        public EventNode(MangoDelegate<IMessage> callback1)
         {
             this.callback1 = callback1;
             next = null;
         }
-        public bool SameAs(EventCallback callback)
+        public bool SameAs(MangoDelegate callback)
         {
             return this.callback == callback ;
         }
-        public bool SameAs(EventCallback1 callback1)
+        public bool SameAs(MangoDelegate<IMessage> callback1)
         {
             return this.callback1 == callback1 ;
         }

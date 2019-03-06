@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using Mango.Framework.Core;
 using Mango.Framework.Resource;
-using Mango.Framework.UI.Component;
+using Mango.UI.Component;
 using UnityEngine;
 
-namespace Mango.Framework.UI.MVVM
+namespace Mango.UI.MVVM
 {
 	public class MVVM_UIPanel  
 	{

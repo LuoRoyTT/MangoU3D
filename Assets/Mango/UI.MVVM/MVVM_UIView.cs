@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Mango.Framework.Event;
 using Mango.Framework.Resource;
+using Mango.Framework.UI;
 using UnityEngine;
 
-namespace Mango.Framework.UI.MVVM
+namespace Mango.UI.MVVM
 {
     public class MVVM_UIView :MVVM_UIPanel,IView
     {
 		private Dictionary<Type,MVVM_UIPanel> panels;
 		private ViewModelBase model;
 		private string groupName;
-		private Events notifications;
+		private MangoEvents notifications;
 		private readonly int[] _assets;
         protected virtual int[] Assets
         {
@@ -23,11 +24,11 @@ namespace Mango.Framework.UI.MVVM
         }
 		public MVVM_UIView()
 		{
-			notifications = new Events();
+			notifications = new MangoEvents();
 			groupName = this.GetType().Name;
 		}
 
-        public override bool Vaild
+        public sealed override bool Vaild
         {
             get
             {
@@ -105,14 +106,7 @@ namespace Mango.Framework.UI.MVVM
             OnExit();
         }
 
-		protected virtual void OnEnter()
-        {
-
-        }
-		
-        protected virtual void OnExit()
-        {
-
-        }
+		protected virtual void OnEnter(){}
+        protected virtual void OnExit(){}
     }
 }

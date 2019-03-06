@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Mango.Framework.Task;
 using UnityEngine;
 
-namespace Mango.Framework.UI.Component
+namespace Mango.UI.Component
 {
 	public class UIComponent : MonoBehaviour
 	{

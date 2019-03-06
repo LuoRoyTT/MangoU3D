@@ -16,18 +16,17 @@ namespace Mango.Framework.Task.Coroutine
 		public CoroutineTask(IEnumerator it)
 		{
 			this.it = it;
-			Status = eTaskStatus.WillDo;
+			status = eTaskStatus.WillDo;
 		}
-        public eTaskStatus Status{ get; private set;}
 
-        public override void Start()
+        protected override void OnStart()
         {
-			Status = eTaskStatus.Doing;
+			status = eTaskStatus.Doing;
 			it.MoveNext();
 			current = it.Current;
         }
 
-        public override void Update()
+        protected override void OnUpdate()
         {
 			if (DateTime.Now <= this.waitTillTime)
 			{
@@ -41,7 +40,7 @@ namespace Mango.Framework.Task.Coroutine
 			if(current is CoroutineTask)
 			{
 				CoroutineTask currentTask = current as CoroutineTask;
-				switch (currentTask.Status)
+				switch (currentTask.status)
                 {
                     case eTaskStatus.WillDo:
                         currentTask.Start();
@@ -53,7 +52,7 @@ namespace Mango.Framework.Task.Coroutine
 			}
             if (!it.MoveNext())
 			{
-				Status = eTaskStatus.Done;
+				status = eTaskStatus.Done;
 				onComplete();
 			}
 			else

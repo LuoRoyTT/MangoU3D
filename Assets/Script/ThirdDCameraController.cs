@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mango.Framework.Event
+public class ThirdDCameraController : MonoBehaviour 
 {
-	public enum enEventID 
-	{
+	
+} 
 
-	}
-}

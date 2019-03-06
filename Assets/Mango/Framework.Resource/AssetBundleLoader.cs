@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Mango.Framework.Resource
 {
-    public class AssetBundleLoader 
+    public class AssetBundleLoader : MangoObject 
     {
         public static readonly int weight = 1;
         public string BundleName
@@ -81,7 +81,7 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                taskModule.StartCoroutine(LoadAssetBundle(onCacheFinished));
+                StartCoroutine(LoadAssetBundle(onCacheFinished));
             }
         }
 
@@ -95,7 +95,7 @@ namespace Mango.Framework.Resource
             }
             else
             {
-                taskModule.StartCoroutine(LoadAssetBundle((bundle)=>
+                StartCoroutine(LoadAssetBundle((bundle)=>
                 {
                     asynRequest.SetAsset(bundle);
                 }));

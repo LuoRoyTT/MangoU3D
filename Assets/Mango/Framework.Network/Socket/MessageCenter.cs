@@ -9,7 +9,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using Mango.Framework.Core;
+using Mango.Core;
 
 public struct sEvent_GameLogicData
 {

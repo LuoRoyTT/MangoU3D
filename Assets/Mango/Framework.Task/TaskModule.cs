@@ -15,7 +15,7 @@ namespace Mango.Framework.Task
 
         protected override void OnInit()
         {
-            Mango.GetModule<UpdateModule>().onMainThreadUpdate += Update;
+            Mango.GetModule<UpdateModule>().onUpdate.AddListener(Update);
         }
 
         protected override void OnRelease()
@@ -33,6 +33,9 @@ namespace Mango.Framework.Task
 				task.onComplete += new Action(()=>{execlusiveTaskList.Remove(last);});
                 switch (task.status)
                 {
+					case eTaskStatus.Invalid:
+						execlusiveTaskList.Remove(last);
+						break;
                     case eTaskStatus.WillDo:
                         task.Start();
                         break;

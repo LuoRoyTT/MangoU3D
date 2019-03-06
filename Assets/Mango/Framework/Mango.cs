@@ -44,14 +44,16 @@ namespace Mango.Framework
 					}
 				}
 			}
+			foreach (var module in gameModules)
+			{
+				module.Init();
+			}
 		}
-
 		public static T GetModule<T>() where T : GameModule
 		{
 			Type moduleType = typeof(T);
 			return (T)GetModule(moduleType);
 		}
-
 		private static GameModule GetModule(Type moduleType)
 		{
 			foreach (var module in gameModules)

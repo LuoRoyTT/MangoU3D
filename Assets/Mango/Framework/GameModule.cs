@@ -4,31 +4,25 @@ using UnityEngine;
 
 namespace Mango.Framework
 {
-	public class GameModule 
-	{
-		public virtual int Priority
+		public class GameModule 
 		{
-			get
-			{
-				return (int)eModulePriority.Default;
-			}
+				public virtual eModulePriority Priority
+				{
+						get
+						{
+							return eModulePriority.Default;
+						}
+				}
+				public void Init()
+				{
+					OnInit();
+				}
+				public void Release()
+				{
+					OnRelease();
+				}
+				protected virtual void OnInit(){}
+				protected virtual void OnRelease(){}
 		}
-		public void Init()
-		{
-			OnInit();
-		}
-		public void Release()
-		{
-			OnRelease();
-		}
-		protected virtual void OnInit()
-		{
-
-		}
-		protected virtual void OnRelease()
-		{
-			
-		}
-    }
 }
 

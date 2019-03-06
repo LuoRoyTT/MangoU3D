@@ -1,23 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using System.Collections.Generic;
 using Mango.Framework.Core;
-using System;
-using Mango.Framework.UI.Component;
 using Mango.Framework.Resource;
 using Mango.Framework.Event;
+using Mango.Framework;
 
-namespace Mango.Framework.UI.MVVM
+namespace Mango.UI.MVVM
 {
-    public class ViewModelBase : Singleton<ViewModelBase>
+    public class ViewModelBase : MangoSingleton<ViewModelBase>
     {
         private MVVM_UIView view;
-        private Events commands;
+        private MangoEvents commands;
         public ViewModelBase()
         {
-            commands = new Events();
+            commands = new MangoEvents();
             OnCreate();
         }
 
