@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Reflection;
 using System;
 
-namespace Mango.Framework.Core
+namespace Mango.Core
 {
     public static class MethodUtils
     {

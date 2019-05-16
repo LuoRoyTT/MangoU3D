@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Mango.Framework.Core;
-using Mango.Framework.Resource;
-using Mango.Framework.Event;
+using Mango.Core;
+using Mango.Resload;
+using Mango.Event;
 using Mango.Framework;
 
 namespace Mango.UI.MVVM

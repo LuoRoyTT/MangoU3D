@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mango.Framework.Core
+namespace Mango.Core
 {
 	public class Singleton<T> where T : class, new()
 	{

@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Mango.Framework.Core;
-using Mango.Framework.Resource;
+using Mango.Core;
+using Mango.Resload;
 using Mango.UI.Component;
 using UnityEngine;
 

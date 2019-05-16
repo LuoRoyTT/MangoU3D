@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace Mango.Framework.Core
+namespace Mango.Core
 {
 
     public class RecyclableObjectPool

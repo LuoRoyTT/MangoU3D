@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Mango.Framework.Event;
-using Mango.Framework.Resource;
-using Mango.Framework.UI;
+using Mango.Event;
+using Mango.Resload;
+using Mango.UI;
 using UnityEngine;
 
 namespace Mango.UI.MVVM
